@@ -1,0 +1,12 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+@theme {
+  --color-primary-color: #f3f3f3;
+  --color-secondary-color: #fefefe;
+  --color-accent-color: #ff5c28;
+}
+
+.clip-path-polygon {
+  clip-path: polygon(0 0, 80% 0, 100% 100%, 0 100%);
+}
