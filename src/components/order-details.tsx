@@ -102,9 +102,9 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
           />
 
           <div className="flex flex-col gap-3">
-            <div className="flex gap-2">
+            <div className="flex justify-between">
               <h1 className="text-lg font-bold">{order.name}</h1>
-              <p className="text-lg font-bold">{order.price}</p>
+              <p className="text-lg font-bold">${order.price}</p>
             </div>
 
             <form
