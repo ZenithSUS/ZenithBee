@@ -8,7 +8,7 @@ export default function SearchBar() {
         <input
           type="text"
           placeholder="What would you like to eat?"
-          className="w-full p-2"
+          className="w-full p-2 outline-none"
         />
       </div>
 

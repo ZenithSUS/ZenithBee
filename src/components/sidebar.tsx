@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { SidebarNav } from "../utils/types";
 import { Link } from "react-router-dom";
 import OrderIcon from "../assets/navigation/order.png";
@@ -35,11 +36,28 @@ const SidebarNavigation: SidebarNav[] = [
 ];
 
 export default function Sidebar() {
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+
   return (
-    <aside className="bg-primary-color fixed top-0 left-0 flex h-full w-[100px] flex-col items-center justify-center gap-10">
+    <aside className="bg-primary-color fixed top-0 left-0 z-40 flex h-full w-[100px] flex-col items-center justify-center gap-10">
       {SidebarNavigation.map((nav) => (
-        <Link to={nav.navigate} key={nav.name}>
-          <img src={nav.image} alt={nav.name} className="h-8 w-8" />
+        <Link
+          to={nav.navigate}
+          key={nav.name}
+          className="relative flex items-center"
+          onMouseEnter={() => setHoveredItem(nav.name)}
+          onMouseLeave={() => setHoveredItem(null)}
+        >
+          <img
+            src={nav.image}
+            alt={nav.name}
+            className="h-6 w-6 cursor-pointer transition duration-300 ease-in-out hover:scale-110"
+          />
+          {hoveredItem === nav.name && (
+            <div className="bg-accent-color absolute left-8 z-10 ml-2 rounded px-2 py-1 whitespace-nowrap text-white">
+              {nav.name}
+            </div>
+          )}
         </Link>
       ))}
     </aside>

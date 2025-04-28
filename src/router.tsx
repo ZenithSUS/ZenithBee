@@ -1,7 +1,9 @@
 import { createBrowserRouter } from "react-router-dom";
+import { lazy, Suspense } from "react";
 import MainLayout from "./layouts";
 import NotFound from "./pages/not-found";
-import Orders from "./pages/orders";
+import Loading from "./components/loading";
+const Orders = lazy(() => import("./pages/orders"));
 
 export const router = createBrowserRouter([
   {
@@ -11,7 +13,11 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "/orders",
-        Component: Orders,
+        element: (
+          <Suspense fallback={<Loading />}>
+            <Orders />
+          </Suspense>
+        ),
       },
     ],
   },
