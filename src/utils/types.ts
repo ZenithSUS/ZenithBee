@@ -4,8 +4,14 @@ export type SidebarNav = {
   navigate: string;
 };
 
+export type CaroselSchema = {
+  image: string;
+  name: string;
+};
+
 export type Products = {
   name: string;
+  description: string;
   image: string;
   price: string;
   foodType: string;
@@ -18,12 +24,22 @@ export type ProductsFilter = {
   value: string;
 };
 
-export type OrderDetail = {
-  name: string;
+export type OrderDetail = Products & {
   size?: string;
   topping?: string;
-  price: string;
   quantity?: number;
   subtotal?: number;
-  image: string;
 };
+
+export type Users = {
+  $id: string;
+  $createdAt: string;
+  $updatedAt: string;
+  firstName: string;
+  middleName?: string | undefined;
+  lastName: string;
+  email: string;
+  password: string;
+};
+
+export type AddUser = Omit<Users, "$createdAt" | "$updatedAt">;

@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
+import { products } from "../data/products";
+import { productFilter } from "../data/product-filter";
+import { Products } from "../utils/types";
 import HeroImg from "../assets/ui/hero.png";
 import SearchBar from "../components/searchbar";
 import ProductCard from "../components/product-card";
 import OrderDetails from "../components/order-details";
-import { products } from "../data/products";
-import { productFilter } from "../data/product-filter";
-import { Products } from "../utils/types";
 
 export default function Orders() {
   const [currentOrder, setCurrentOrder] = useState<string>("");
@@ -22,7 +22,7 @@ export default function Orders() {
 
   return (
     <div
-      className={`grid w-full ${orderDetail ? "grid-cols-[65%_35%]" : "grid-cols-1"} gap-6`}
+      className={`grid w-full ${orderDetail ? "grid-cols-[65%_35%]" : "grid-cols-1"} mt-2 gap-6`}
     >
       <div className="flex min-h-screen flex-col gap-3">
         <SearchBar />
@@ -39,22 +39,24 @@ export default function Orders() {
         </div>
 
         {/* Product Filter*/}
-        <div className="mt-10 flex w-full items-center justify-baseline gap-5">
+        <div className="bg-primary-color sticky top-0 z-[20] flex w-full items-center justify-baseline gap-10 overflow-auto px-2 py-4 md:gap-5">
           {productFilter.map((filter, index) => (
-            <div key={index} className="flex cursor-pointer items-center gap-1">
+            <div
+              key={index}
+              className="flex cursor-pointer items-center gap-3 md:gap-1"
+            >
               <img src={filter.image} alt={filter.name} className="w-6" />
-              <h2 className="text-md">{filter.name}</h2>
+              <h2 className="text-md text-center">{filter.name}</h2>
             </div>
           ))}
         </div>
 
         {/*Products */}
-        <div className="grid h-82 grid-cols-3 place-items-center gap-5 overflow-auto">
+        <div className="place-items-center gap-5 md:grid md:grid-cols-2 lg:grid-cols-3">
           {products.map((product, index) => (
             <ProductCard
               key={index}
               product={product}
-              order={currentOrder}
               setCurrentOrder={setCurrentOrder}
             />
           ))}

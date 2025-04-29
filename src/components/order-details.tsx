@@ -79,7 +79,7 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
 
   return (
     <div
-      className={`bg-primary-color fixed top-0 right-0 bottom-0 z-50 flex flex-col gap-2.5 overflow-auto p-5 shadow-lg transition-transform duration-300 ease-in-out ${
+      className={`bg-primary-color fixed top-0 right-0 bottom-0 z-50 flex w-[30%] flex-col gap-2.5 overflow-auto p-5 shadow-lg transition-transform duration-300 ease-in-out ${
         isVisible ? "translate-x-0" : "translate-x-full"
       }`}
     >
@@ -95,11 +95,14 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
         <h1 className="text-3xl font-bold">1342 Morris Street</h1>
 
         <div className="mt-4 grid grid-cols-2 gap-4">
-          <img
-            src={order.image}
-            alt={order.name}
-            className="h-52 w-52 rounded-2xl object-cover"
-          />
+          <div className="grid grid-cols-1 gap-1.5 self-start">
+            <img
+              src={order.image}
+              alt={order.name}
+              className="h-52 w-52 rounded-2xl object-cover"
+            />
+            <p className="break-all">{order.description}</p>
+          </div>
 
           <div className="flex flex-col gap-3">
             <div className="flex justify-between">
@@ -157,7 +160,7 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
       {orders.length > 0 && (
         <div className="mt-4">
           <h2 className="mb-2 text-xl font-bold">Order Items</h2>
-          <div className="flex max-h-60 flex-col gap-2 overflow-y-auto">
+          <div className="flex flex-col gap-2">
             {orders.map((item, index) => (
               <div
                 key={index}

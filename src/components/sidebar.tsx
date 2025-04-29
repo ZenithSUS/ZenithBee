@@ -24,9 +24,9 @@ const SidebarNavigation: SidebarNav[] = [
     navigate: "/",
   },
   {
-    name: "Notification",
+    name: "NewComers",
     image: BellIcon,
-    navigate: "/notification",
+    navigate: "/newcomers",
   },
   {
     name: "Reserved",
@@ -39,7 +39,7 @@ export default function Sidebar() {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
   return (
-    <aside className="bg-primary-color fixed top-0 left-0 z-40 flex h-full w-[100px] flex-col items-center justify-center gap-10">
+    <aside className="bg-primary-color fixed top-0 left-0 z-30 hidden h-full w-[100px] flex-col items-center justify-center gap-10 md:flex">
       {SidebarNavigation.map((nav) => (
         <Link
           to={nav.navigate}
