@@ -1,4 +1,4 @@
-import { Products as ProductsType } from "../utils/types";
+import { ShowProducts } from "../utils/types";
 import MarghetitaPizza from "../assets/products/margherita-pizza.png";
 import BeefBurger from "../assets/products/beef-burger.png";
 import CeasarSalad from "../assets/products/ceasar-salad.png";
@@ -10,7 +10,7 @@ import GreekYogartBowl from "../assets/products/greek-yogurt-bowl.jpg";
 import FishAndChips from "../assets/products/fish-and-chips.jpg";
 import ChickenQuesadilla from "../assets/products/chicken-quesadillas.jpg";
 
-export const products: ProductsType[] = [
+export const products: ShowProducts[] = [
   {
     name: "Margherita Pizza",
     image: MarghetitaPizza,

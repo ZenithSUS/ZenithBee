@@ -1,6 +1,6 @@
 import Modal from "react-modal";
 import { FaRegWindowClose } from "react-icons/fa";
-import { Products } from "../utils/types";
+import { ShowProducts } from "../utils/types";
 import { useEffect, useState } from "react";
 
 Modal.setAppElement("#root");
@@ -14,7 +14,7 @@ export function ProductModal({
   isModalOpen,
   setIsModalOpen,
   product,
-}: ModalProps & { product: Products }) {
+}: ModalProps & { product: ShowProducts }) {
   const [modalScale, setModalScale] = useState(false);
   const [internalOpen, setInternalOpen] = useState(false);
 

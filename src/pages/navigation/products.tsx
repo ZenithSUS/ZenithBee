@@ -1,15 +1,19 @@
 import { useState, useEffect } from "react";
 import { products } from "../../data/products";
+import { useGetProducts } from "../../hooks/products";
 import { productFilter } from "../../data/product-filter";
-import { Products as ProductSchema } from "../../utils/types";
+import { ShowProducts } from "../../utils/types";
 import HeroImg from "../../assets/ui/hero.png";
 import SearchBar from "../../components/searchbar";
 import ProductCard from "../../components/product-card";
 import OrderDetails from "../../components/order-details";
 
 export default function Products() {
+  const { data: fetchedProducts } = useGetProducts();
+  console.log(fetchedProducts);
+
   const [currentOrder, setCurrentOrder] = useState<string>("");
-  const [orderDetail, setOrderDetail] = useState<ProductSchema | null>();
+  const [orderDetail, setOrderDetail] = useState<ShowProducts | null>();
 
   useEffect(() => {
     if (currentOrder !== null || currentOrder !== "") {

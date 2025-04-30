@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Products } from "../utils/types";
+import { ShowProducts } from "../utils/types";
 import { ProductModal } from "./modals";
 
 type ProductType = {
-  product: Products;
+  product: ShowProducts;
   setCurrentOrder?: (name: string) => void;
 };
 

@@ -15,6 +15,9 @@ export type CaroselSchema = {
 };
 
 export type Products = {
+  $id: string;
+  $createdAt: string;
+  $updatedAt: string;
   name: string;
   description: string;
   image: string;
@@ -23,13 +26,15 @@ export type Products = {
   isFavorite: boolean;
 };
 
+export type ShowProducts = Omit<Products, "$id" | "$createdAt" | "$updatedAt">;
+
 export type ProductsFilter = {
   name: string;
   image: string;
   value: string;
 };
 
-export type OrderDetail = Products & {
+export type OrderDetail = ShowProducts & {
   size?: string;
   topping?: string;
   quantity?: number;
