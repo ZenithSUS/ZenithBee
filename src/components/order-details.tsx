@@ -149,7 +149,7 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
                 </span>
               </div>
               <button className="bg-accent-color hover:bg-accent-color/80 mt-4 cursor-pointer rounded-md p-2 text-white transition duration-300 ease-in-out hover:scale-105">
-                Add Order
+                Add
               </button>
             </form>
           </div>
@@ -183,9 +183,15 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
         <h2 className="text-gray-500">Total</h2>
         <p>$ {total.toFixed(2)}</p>
       </div>
-      <button className="bg-accent-color hover:bg-accent-color/80 mt-4 cursor-pointer rounded-md p-2 text-white transition duration-300 ease-in-out hover:scale-105">
-        Submit Order
-      </button>
+
+      <div className="grid grid-cols-2 gap-2">
+        <button className="bg-accent-color hover:bg-accent-color/80 mt-4 cursor-pointer rounded-md p-2 text-white transition duration-300 ease-in-out hover:scale-105">
+          Submit Order
+        </button>
+        <button className="bg-accent-color hover:bg-accent-color/80 mt-4 cursor-pointer rounded-md p-2 text-white transition duration-300 ease-in-out hover:scale-105">
+          Reserve Order
+        </button>
+      </div>
     </div>
   );
 }

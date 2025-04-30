@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
-import { products } from "../data/products";
-import { productFilter } from "../data/product-filter";
-import { Products } from "../utils/types";
-import HeroImg from "../assets/ui/hero.png";
-import SearchBar from "../components/searchbar";
-import ProductCard from "../components/product-card";
-import OrderDetails from "../components/order-details";
+import { products } from "../../data/products";
+import { productFilter } from "../../data/product-filter";
+import { Products as ProductSchema } from "../../utils/types";
+import HeroImg from "../../assets/ui/hero.png";
+import SearchBar from "../../components/searchbar";
+import ProductCard from "../../components/product-card";
+import OrderDetails from "../../components/order-details";
 
-export default function Orders() {
+export default function Products() {
   const [currentOrder, setCurrentOrder] = useState<string>("");
-  const [orderDetail, setOrderDetail] = useState<Products | null>();
+  const [orderDetail, setOrderDetail] = useState<ProductSchema | null>();
 
   useEffect(() => {
     if (currentOrder !== null || currentOrder !== "") {
@@ -22,7 +22,7 @@ export default function Orders() {
 
   return (
     <div
-      className={`grid w-full ${orderDetail ? "grid-cols-[65%_35%]" : "grid-cols-1"} mt-2 gap-6`}
+      className={`grid w-full ${orderDetail ? "grid-cols-[65%_35%]" : "grid-cols-1"} mt-3 gap-6`}
     >
       <div className="flex min-h-screen flex-col gap-3">
         <SearchBar />

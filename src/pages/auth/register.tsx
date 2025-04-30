@@ -1,15 +1,27 @@
 import { z } from "zod";
 import { ID } from "appwrite";
-import { account } from "../appwrite";
+import {
+  BUCKET_ID,
+  ENDPOINT as endpointUrl,
+  PROJECT_ID as projectId,
+  account,
+  storage,
+} from "../../appwrite";
+import { v4 as uuidv4 } from "uuid";
 import { useNavigate } from "react-router-dom";
-import { useTransition } from "react";
+import { useTransition, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { createUser } from "../actions/users";
-import ZenithBee from "../assets/ui/zenithbee.png";
-import UserSvg from "../assets/svg/user";
-import EmailSvg from "../assets/svg/email";
-import PasswordSvg from "../assets/svg/password";
+import { createUser } from "../../actions/users";
+import {
+  MAX_FILE_SIZE,
+  ACCEPTED_IMAGE_TYPES,
+} from "../../utils/constants/image-file";
+import ZenithBee from "../../assets/ui/zenithbee.png";
+import UserSvg from "../../assets/svg/user";
+import EmailSvg from "../../assets/svg/email";
+import PasswordSvg from "../../assets/svg/password";
+import { toast } from "react-toastify";
 
 type registerSchemaType = z.infer<typeof registerSchema>;
 
@@ -22,6 +34,22 @@ const registerSchema = z
       .string()
       .min(1, { message: "Email is required" })
       .email({ message: "Email is invalid" }),
+    image: z
+      .instanceof(FileList)
+      .refine(
+        (files) => files.length === 0 || files.length === 1,
+        "Please upload exactly one file",
+      )
+      .refine(
+        (files) => files.length === 0 || files[0].size <= MAX_FILE_SIZE,
+        `Max file size is 5MB`,
+      )
+      .refine(
+        (files) =>
+          files.length === 0 || ACCEPTED_IMAGE_TYPES.includes(files[0].type),
+        "Only .jpg, .jpeg, and .png formats are supported",
+      )
+      .optional(),
     password: z.string().min(8, { message: "Password requires 8 characters" }),
     confirmpassword: z
       .string()
@@ -35,6 +63,7 @@ const registerSchema = z
 export default function Register() {
   const navigate = useNavigate();
   const [isPending, startTransition] = useTransition();
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const form = useForm<registerSchemaType>({
     resolver: zodResolver(registerSchema),
@@ -48,12 +77,27 @@ export default function Register() {
     },
   });
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fileList = e.target.files;
+    if (fileList && fileList.length > 0) {
+      const file = fileList[0];
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setImagePreview(null);
+    }
+  };
+
   const registerAcc = async (data: registerSchemaType) => {
     try {
       if (Object.keys(form.formState.errors).length > 0) return;
       console.log(data);
       startTransition(async () => {
-        const fullName = `${data.firstName} ${data.middleName} ${data.lastName}`;
+        const fullName =
+          `${data.firstName} ${data.middleName || ""} ${data.lastName}`.trim();
 
         const acc = await account.create(
           ID.unique(),
@@ -67,16 +111,55 @@ export default function Register() {
           data.password,
         );
 
+        const {
+          image,
+          confirmpassword,
+          ...userDataWithoutImageAndConfirmPassword
+        } = data;
         const userData = {
-          ...data,
-          $id: acc.$id,
+          ...userDataWithoutImageAndConfirmPassword,
+          userId: acc.$id,
+          profileImage: "N/A",
+          profileId: "N/A",
         };
+
+        if (data.image instanceof FileList && data.image.length > 0) {
+          const imageFile = new File(
+            [data.image[0]],
+            "zenithbee_profile_" + uuidv4() + ".jpg",
+            {
+              type: "image/jpeg",
+            },
+          );
+          const uploadedFile = await storage.createFile(
+            BUCKET_ID,
+            ID.unique(),
+            imageFile,
+          );
+
+          userData.profileImage = `${endpointUrl}/storage/buckets/${uploadedFile.bucketId}/files/${uploadedFile.$id}/view?project=${projectId}&mode=admin`;
+          userData.profileId = uploadedFile.$id;
+        }
+
+        account.updatePrefs({
+          imageUrl: userData.profileImage,
+          imageId: userData.profileId,
+        });
+
         await createUser(userData);
 
         localStorage.setItem("session", JSON.stringify(session.current));
         const userResponse = await account.get();
+        localStorage.setItem("id", JSON.stringify(userResponse.$id));
         localStorage.setItem("name", JSON.stringify(userResponse.name));
         localStorage.setItem("email", JSON.stringify(userResponse.email));
+        localStorage.setItem("profileId", JSON.stringify(userData.profileId));
+        localStorage.setItem(
+          "profileImage",
+          JSON.stringify(userData.profileImage),
+        );
+        toast.success("Registered Successfully!");
+        navigate("/");
       });
     } catch (error) {
       console.error(error);
@@ -84,8 +167,8 @@ export default function Register() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="flexw-full flex-col items-center justify-center rounded-2xl bg-[#ffffff] p-8 px-4 shadow-xl">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
+      <div className="w-full max-w-2xl flex-col items-center justify-center rounded-2xl bg-[#ffffff] p-8 shadow-xl">
         <div className="mx-auto flex flex-col items-center justify-center gap-3 pb-4">
           <div>
             <img src={ZenithBee} alt="Logo" width="63" />
@@ -131,7 +214,7 @@ export default function Register() {
                 htmlFor="middleName"
                 className="mb-2 block text-base font-medium text-[#111827]"
               >
-                Middle Name
+                Middle Name {"(Optional)"}
               </label>
               <div className="relative text-gray-400">
                 {UserSvg()}
@@ -194,6 +277,42 @@ export default function Register() {
               </span>
             </div>
 
+            <div className="pb-4">
+              <label
+                htmlFor="profileImage"
+                className="mb-2 block text-base font-medium text-[#111827]"
+              >
+                Profile Image
+              </label>
+              <div className="flex items-center space-x-4">
+                <div className="flex-1">
+                  <input
+                    type="file"
+                    id="profileImage"
+                    {...form.register("image")}
+                    onChange={(e) => {
+                      form.register("image").onChange(e);
+                      handleImageChange(e);
+                    }}
+                    className="mb-2 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-600 file:mr-4 file:rounded-lg file:border-0 file:bg-[#ff5c28] file:px-4 file:py-2 file:text-white hover:file:bg-[#ff5c28]/90"
+                    accept="image/png, image/jpeg, image/jpg"
+                  />
+                </div>
+                {imagePreview && (
+                  <div className="flex-shrink-0">
+                    <img
+                      src={imagePreview}
+                      alt="Profile preview"
+                      className="h-20 w-20 rounded-full border-2 border-[#ff5c28] object-cover"
+                    />
+                  </div>
+                )}
+              </div>
+              <span className="h-6 text-red-500">
+                {form.formState.errors.image?.message}
+              </span>
+            </div>
+
             <div className="grid grid-cols-2 gap-2">
               <div className="pb-6">
                 <label
@@ -247,7 +366,7 @@ export default function Register() {
               className="focus:ring-primary-300 hover:bg-accent-color/85 col-span-3 mb-6 w-full cursor-pointer rounded-lg bg-[#ff5c28] px-5 py-2.5 text-center text-sm font-medium text-[#FFFFFF] transition duration-300 ease-in-out hover:scale-95 focus:ring-4 focus:outline-hidden disabled:bg-gray-500"
               disabled={isPending}
             >
-              Sign Up
+              {isPending ? "Signing Up..." : "Sign Up"}
             </button>
           </div>
 

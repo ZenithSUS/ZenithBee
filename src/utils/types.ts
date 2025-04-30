@@ -4,6 +4,11 @@ export type SidebarNav = {
   navigate: string;
 };
 
+export type AppwriteError = {
+  code: number;
+  message: string;
+};
+
 export type CaroselSchema = {
   image: string;
   name: string;
@@ -36,10 +41,14 @@ export type Users = {
   $createdAt: string;
   $updatedAt: string;
   firstName: string;
-  middleName?: string | undefined;
+  middleName?: string;
   lastName: string;
   email: string;
   password: string;
+  profileImage: string;
+  profileId: string;
 };
 
-export type AddUser = Omit<Users, "$createdAt" | "$updatedAt">;
+export type AddUser = Omit<Users, "$id" | "$createdAt" | "$updatedAt"> & {
+  userId: string;
+};

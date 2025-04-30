@@ -29,7 +29,8 @@ export default function ProductCard({ product, setCurrentOrder }: ProductType) {
           <img
             src={product.image}
             alt={product.name}
-            className="h-52 w-full rounded-md object-cover"
+            className="h-52 w-full cursor-pointer rounded-md object-cover transition duration-300 ease-in-out hover:scale-105"
+            onClick={() => setIsModalOpen(!isModalOpen)}
           />
         </div>
         <div className="card-body">
@@ -44,7 +45,7 @@ export default function ProductCard({ product, setCurrentOrder }: ProductType) {
                 className="bg-accent-color cursor-pointer rounded-md p-2 font-semibold text-white transition duration-300 ease-in-out hover:scale-105"
                 onClick={() => checkDetails(product.name)}
               >
-                Check Details
+                Order
               </button>
             )}
             <button

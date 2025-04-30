@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { SidebarNav } from "../utils/types";
 import { Link } from "react-router-dom";
-import OrderIcon from "../assets/navigation/order.png";
+import ProductIcon from "../assets/navigation/order.png";
 import HomeIcon from "../assets/navigation/home.png";
 import FavoriteIcon from "../assets/navigation/favorites.png";
-import BellIcon from "../assets/navigation/bell.png";
+import OrderIcon from "../assets/navigation/bell.png";
 import BookIcon from "../assets/navigation/reserved.png";
 
 const SidebarNavigation: SidebarNav[] = [
   {
-    name: "Orders",
-    image: OrderIcon,
-    navigate: "/orders",
+    name: "Products",
+    image: ProductIcon,
+    navigate: "/products",
   },
   {
     name: "Favorites",
@@ -24,9 +24,9 @@ const SidebarNavigation: SidebarNav[] = [
     navigate: "/",
   },
   {
-    name: "NewComers",
-    image: BellIcon,
-    navigate: "/newcomers",
+    name: "Orders",
+    image: OrderIcon,
+    navigate: "/orders",
   },
   {
     name: "Reserved",

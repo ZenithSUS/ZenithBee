@@ -41,7 +41,7 @@ export const products: ProductsType[] = [
   {
     name: "Chicken Tikka Masala",
     image: ChickTikkaMasala,
-    price: "14.50",
+    price: "10.50",
     foodType: "Indian",
     isFavorite: false,
     description:
@@ -50,14 +50,14 @@ export const products: ProductsType[] = [
   {
     name: "Vegetable Sushi Roll",
     image: VegetableSushiRoll,
-    price: "11.25",
+    price: "9.25",
     foodType: "Japanese",
     isFavorite: true,
     description:
       "Fresh cucumber, avocado, and carrot wrapped in seasoned rice and nori seaweed, served with soy sauce and wasabi.",
   },
   {
-    name: "Chocolate Brownie",
+    name: "Chocolate Brownies",
     image: ChocolateBrownies,
     price: "5.99",
     foodType: "Dessert",
@@ -68,7 +68,7 @@ export const products: ProductsType[] = [
   {
     name: "Pad Thai",
     image: PadThai,
-    price: "13.75",
+    price: "7.75",
     foodType: "Thai",
     isFavorite: true,
     description:

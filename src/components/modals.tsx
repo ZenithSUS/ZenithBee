@@ -16,27 +16,34 @@ export function ProductModal({
   product,
 }: ModalProps & { product: Products }) {
   const [modalScale, setModalScale] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
 
   useEffect(() => {
     if (isModalOpen) {
+      setInternalOpen(true);
       setTimeout(() => {
         setModalScale(true);
       }, 50);
     } else {
       setModalScale(false);
+      setTimeout(() => {
+        setInternalOpen(false);
+      }, 300);
     }
   }, [isModalOpen]);
 
   return (
     <Modal
-      isOpen={isModalOpen}
+      isOpen={internalOpen}
       parentSelector={() => document.querySelector("#root") as HTMLElement}
       className={
         "bg-opacity-100 fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-black/50 p-4 backdrop-blur-sm"
       }
-      overlayClassName={"fixed inset-0 z-[100] bg-opacity-50 backdrop-blur-sm"}
+      overlayClassName={
+        "fixed inset-0 z-[100] bg-opacity-50 backdrop-blur-sm transition-opacity duration-300"
+      }
     >
-      <div className="flex min-w-screen flex-col md:min-w-[400px]">
+      <div className="flex min-w-screen flex-col items-center justify-center md:min-w-[400px]">
         <div
           className={`card bg-base-100 w-96 shadow-sm transition-all duration-300 ease-in-out ${
             modalScale ? "scale-100 opacity-100" : "scale-75 opacity-0"
@@ -47,7 +54,10 @@ export function ProductModal({
               className="absolute top-5 right-5 cursor-pointer transition duration-300 ease-in-out hover:scale-105"
               color="red"
               size={30}
-              onClick={() => setIsModalOpen(!isModalOpen)}
+              onClick={() => {
+                // Use the proper close method to trigger the closing animation
+                setIsModalOpen(false);
+              }}
             />
             <img src={product.image} alt={product.name} />
           </figure>

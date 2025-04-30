@@ -1,14 +1,16 @@
 import { createBrowserRouter } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import MainLayout from "./layouts";
-import NotFound from "./pages/not-found";
+import NotFound from "./pages/navigation/not-found";
 import Loading from "./components/loading";
-const Login = lazy(() => import("./pages/login"));
-const Register = lazy(() => import("./pages/register"));
-const Home = lazy(() => import("./pages/home"));
-const Orders = lazy(() => import("./pages/orders"));
-const Favorites = lazy(() => import("./pages/favorites"));
-const Reserved = lazy(() => import("./pages/reserved"));
+
+const Login = lazy(() => import("./pages/auth/login"));
+const Register = lazy(() => import("./pages/auth/register"));
+const Home = lazy(() => import("./pages/navigation/home"));
+const Products = lazy(() => import("./pages/navigation/products"));
+const Favorites = lazy(() => import("./pages/navigation/favorites"));
+const Orders = lazy(() => import("./pages/navigation/orders"));
+const Reserved = lazy(() => import("./pages/navigation/reserved"));
 
 export const router = createBrowserRouter([
   {
@@ -25,10 +27,10 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "/orders",
+        path: "/products",
         element: (
           <Suspense fallback={<Loading />}>
-            <Orders />
+            <Products />
           </Suspense>
         ),
       },
@@ -37,6 +39,14 @@ export const router = createBrowserRouter([
         element: (
           <Suspense fallback={<Loading />}>
             <Favorites />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/orders",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <Orders />
           </Suspense>
         ),
       },
