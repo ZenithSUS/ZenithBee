@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { products } from "../../data/products";
 import { useGetProducts } from "../../hooks/products";
 import { productFilter } from "../../data/product-filter";
 import { ShowProducts } from "../../utils/types";
@@ -7,22 +6,24 @@ import HeroImg from "../../assets/ui/hero.png";
 import SearchBar from "../../components/searchbar";
 import ProductCard from "../../components/product-card";
 import OrderDetails from "../../components/order-details";
+import Loading from "../../components/loading";
 
 export default function Products() {
-  const { data: fetchedProducts } = useGetProducts();
-  console.log(fetchedProducts);
-
   const [currentOrder, setCurrentOrder] = useState<string>("");
-  const [orderDetail, setOrderDetail] = useState<ShowProducts | null>();
+  const [orderDetail, setOrderDetail] = useState<ShowProducts | null>(null);
+  const { data: products, isLoading } = useGetProducts();
+  console.log(products);
 
   useEffect(() => {
-    if (currentOrder !== null || currentOrder !== "") {
+    if (currentOrder && products) {
       const data = products.find((prod) => prod.name === currentOrder);
-      setOrderDetail(data);
-      return;
+      setOrderDetail(data || null);
+    } else {
+      setOrderDetail(null);
     }
-    setOrderDetail(null);
-  }, [currentOrder]);
+  }, [currentOrder, products]);
+
+  if (isLoading) return <Loading />;
 
   return (
     <div
@@ -43,7 +44,7 @@ export default function Products() {
         </div>
 
         {/* Product Filter*/}
-        <div className="bg-primary-color sticky top-0 z-[20] flex w-full items-center justify-baseline gap-10 overflow-auto px-2 py-4 md:gap-5">
+        <div className="bg-primary-color dark:bg-primary-dark-color sticky top-0 z-[20] flex w-full items-center justify-baseline gap-10 overflow-auto px-2 py-4 md:gap-5">
           {productFilter.map((filter, index) => (
             <div
               key={index}
@@ -57,7 +58,7 @@ export default function Products() {
 
         {/*Products */}
         <div className="place-items-center gap-5 md:grid md:grid-cols-2 lg:grid-cols-3">
-          {products.map((product, index) => (
+          {products?.map((product, index) => (
             <ProductCard
               key={index}
               product={product}

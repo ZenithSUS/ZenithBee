@@ -1,13 +1,18 @@
-import { products } from "../data/products";
+import { useGetProducts } from "../hooks/products";
+import Loading from "./loading";
 
 export default function FoodCarousel() {
+  const { data: products, isLoading } = useGetProducts();
+
+  if (isLoading) return <Loading />;
+
   return (
     <div className="w-full overflow-x-auto py-6">
       <div className="flex space-x-6 px-4">
-        {products.map((product, index) => (
+        {products?.map((product, index) => (
           <div
             key={index}
-            className="w-64 flex-none rounded-2xl bg-white shadow-md transition-shadow duration-300 hover:shadow-lg"
+            className="bg-primary-color dark:bg-primary-dark-color w-64 flex-none rounded-2xl shadow-md transition-shadow duration-300 hover:shadow-lg"
           >
             <img
               src={product.image}

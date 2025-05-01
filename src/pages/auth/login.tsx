@@ -1,4 +1,4 @@
-import ZenithBee from "../assets/ui/zenithbee.png";
+import ZenithBee from "../../assets/ui/zenithbee.png";
 import EmailSvg from "../../assets/svg/email";
 import PasswordSvg from "../../assets/svg/password";
 import { z } from "zod";

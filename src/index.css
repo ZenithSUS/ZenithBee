@@ -5,6 +5,10 @@
   --color-primary-color: #f3f3f3;
   --color-secondary-color: #fefefe;
   --color-accent-color: #ff5c28;
+
+  --color-primary-dark-color: #0c0c0c;
+  --color-secondary-dark-color: #010101;
+  --color-accent-dark-color: #0091d7;
 }
 
 .clip-path-polygon {

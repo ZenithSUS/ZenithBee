@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ShowProducts } from "../utils/types";
 import { ProductModal } from "./modals";
+import { Star } from "lucide-react";
 
 type ProductType = {
   product: ShowProducts;
@@ -23,7 +24,7 @@ export default function ProductCard({ product, setCurrentOrder }: ProductType) {
         product={product}
       />
       <div
-        className={`card bg-base-100 card-md h-96 w-[calc(100%-1rem)] shadow-sm`}
+        className={`card bg-base-100 card-md h-96 w-[calc(100%-1rem)] text-black shadow-sm dark:text-white`}
       >
         <div className="card-header">
           <img
@@ -38,7 +39,15 @@ export default function ProductCard({ product, setCurrentOrder }: ProductType) {
             <h2 className="card-title">{product.name}</h2>
             <p className="text-end text-2xl font-bold">${product.price}</p>
           </div>
-          <p className="text-gray-400">{product.foodType}</p>
+          <div className="flex w-full items-center justify-between">
+            <p className="text-gray-400">{product.foodType}</p>
+            <Star
+              size={20}
+              className="absolute top-3 right-3 cursor-pointer"
+              color="#FF5C28"
+              strokeWidth={2}
+            />
+          </div>
           <div className="card-actions justify-end">
             {setCurrentOrder && (
               <button

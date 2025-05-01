@@ -7,7 +7,7 @@ export default function Loading() {
         color="#FF5C28"
         size="large"
         text="loading..."
-        textColor="#000000"
+        textColor={"#FF5C28"}
       />
     </div>
   );

@@ -1,7 +1,8 @@
 import { createBrowserRouter } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import MainLayout from "./layouts";
-import NotFound from "./pages/navigation/not-found";
+import NotFound from "./pages/route-status/not-found";
+import Error from "./pages/route-status/error";
 import Loading from "./components/loading";
 
 const Login = lazy(() => import("./pages/auth/login"));
@@ -16,7 +17,10 @@ export const router = createBrowserRouter([
   {
     path: "/",
     Component: MainLayout,
-    errorElement: <NotFound />,
+    errorElement: <Error />,
+    loader: async () => {
+      return null;
+    },
     children: [
       {
         path: "/",
@@ -63,11 +67,16 @@ export const router = createBrowserRouter([
   {
     path: "/login",
     Component: Login,
-    errorElement: <NotFound />,
+    errorElement: <Error />,
   },
   {
     path: "/register",
     Component: Register,
-    errorElement: <NotFound />,
+    errorElement: <Error />,
+  },
+  {
+    path: "*",
+    Component: NotFound,
+    errorElement: <Error />,
   },
 ]);

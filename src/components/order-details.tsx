@@ -79,7 +79,7 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
 
   return (
     <div
-      className={`bg-primary-color fixed top-0 right-0 bottom-0 z-50 flex w-[30%] flex-col gap-2.5 overflow-auto p-5 shadow-lg transition-transform duration-300 ease-in-out ${
+      className={`bg-primary-color dark:bg-primary-dark-color fixed top-0 right-0 bottom-0 z-50 flex w-[30%] flex-col gap-2.5 overflow-auto p-5 text-black shadow-lg transition-transform duration-300 ease-in-out dark:text-white ${
         isVisible ? "translate-x-0" : "translate-x-full"
       }`}
     >
@@ -123,7 +123,7 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
                   id="quantity"
                   min={1}
                   {...form.register("quantity")}
-                  className="bg-primary-color w-full border-2 border-black p-1"
+                  className="bg-primary-color w-full border-2 border-black p-1 dark:text-black"
                 />
                 <span className="text-red-500">
                   {form.formState.errors.quantity?.message}
@@ -135,7 +135,7 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
                 </label>
                 <select
                   id="size"
-                  className="bg-primary-color w-full border-2 border-black p-1"
+                  className="bg-primary-color w-full border-2 border-black p-1 dark:text-black"
                   {...form.register("size")}
                 >
                   <option value="">Select Size</option>
