@@ -1,4 +1,4 @@
-import { useState, useTransition, useMemo } from "react";
+import { useState, useTransition } from "react";
 import {
   useAddToFavorite,
   useGetFavoriteByUser,
@@ -46,14 +46,11 @@ export default function ProductCard({ product, setCurrentOrder }: ProductType) {
     }
   };
 
-  const isFavorite = useMemo(
-    () =>
-      favorite?.find(
-        (favorite) =>
-          favorite.user.$id === userId && favorite.product.$id === product.$id,
-      ),
-    [favorite, userId, product.$id],
-  );
+  const isFavorite =
+    favorite?.find(
+      (favorite) =>
+        favorite.user.$id === userId && favorite.product.$id === product.$id,
+    ) || false;
 
   return (
     <>

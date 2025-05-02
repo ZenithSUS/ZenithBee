@@ -54,10 +54,12 @@ export type ProductsFilter = {
 };
 
 export type OrderDetail = ShowProducts & {
-  size?: string;
-  topping?: string;
-  quantity?: number;
-  subtotal?: number;
+  tmpId: string;
+  size: string;
+  quantity: number;
+  subtotal: number;
+  user: string;
+  product: ShowProducts;
 };
 
 export type Favorite = {
@@ -72,3 +74,19 @@ export type AddFavorite = {
   user: string;
   product: string;
 };
+
+export type Reserved = {
+  $id: string;
+  $createdAt: string;
+  $updatedAt: string;
+  user: Users;
+  product: Products;
+  quantity: number | string;
+  size: string;
+  price: number | string;
+};
+
+export type AddReserved = Omit<
+  Reserved,
+  "$id" | "$createdAt" | "$updatedAt" | "user" | "product" | "price"
+> & { user: string; product: string; price: string };

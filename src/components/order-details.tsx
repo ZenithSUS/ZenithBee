@@ -1,9 +1,11 @@
 import { z } from "zod";
+import { v4 as uuidv4 } from "uuid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { OrderDetail } from "../utils/types";
-import { FaRegWindowClose } from "react-icons/fa";
+import { FaRegWindowClose, FaTrashAlt } from "react-icons/fa";
+import { ReserveModal } from "./modals";
 
 type OrderType = {
   order: OrderDetail;
@@ -19,6 +21,7 @@ const orderSchema = z.object({
 
 export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
   const [total, setTotal] = useState<number>(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [orders, setOrders] = useState<OrderDetail[]>([]);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -38,15 +41,42 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
     },
   });
 
+  const removeOrder = (id: string) => {
+    setOrders((prev) => prev.filter((o) => o.tmpId !== id));
+    const orderToRemove = orders.find((o) => o.tmpId === id);
+    if (orderToRemove?.subtotal) {
+      setTotal((prev) => prev - (orderToRemove.subtotal || 0));
+    }
+  };
+
   const addOrder = (data: orderSchemaType) => {
     try {
       if (Object.keys(form.formState.errors).length > 0) return;
+      let finalPrice = 0;
+      const price = parseFloat(order.price);
+      switch (data.size) {
+        case "small":
+          finalPrice = price;
+          break;
+        case "medium":
+          finalPrice = price + price * 0.35;
+          break;
+        case "large":
+          finalPrice = price + price * 0.5;
+          break;
+        case "extra-large":
+          finalPrice = price + price * 0.65;
+          break;
+        default:
+          break;
+      }
 
       const enhancedOrder = {
         ...order,
+        tmpId: uuidv4(),
         quantity: parseInt(data.quantity),
         size: data.size,
-        subtotal: parseFloat(order.price) * parseInt(data.quantity),
+        subtotal: finalPrice * parseInt(data.quantity),
       };
 
       setOrders((prev) => [...prev, enhancedOrder]);
@@ -56,6 +86,10 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleReserve = () => {
+    setIsModalOpen(true);
   };
 
   const handleClose = () => {
@@ -83,6 +117,11 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
         isVisible ? "translate-x-0" : "translate-x-full"
       }`}
     >
+      <ReserveModal
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+        orderDetail={orders}
+      />
       <FaRegWindowClose
         className="absolute top-5 right-5 cursor-pointer transition duration-300 ease-in-out hover:scale-105"
         color="red"
@@ -172,7 +211,16 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
                     Size: {item.size} | Qty: {item.quantity}
                   </p>
                 </div>
-                <p className="font-bold">${item.subtotal?.toFixed(2)}</p>
+                <p className="font-bold">
+                  ${item.subtotal?.toFixed(2)}{" "}
+                  <button onClick={() => removeOrder(item.tmpId || "")}>
+                    <FaTrashAlt
+                      color="red"
+                      size={20}
+                      className="ml-2 cursor-pointer"
+                    />
+                  </button>
+                </p>
               </div>
             ))}
           </div>
@@ -188,7 +236,10 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
         <button className="bg-accent-color hover:bg-accent-color/80 mt-4 cursor-pointer rounded-md p-2 text-white transition duration-300 ease-in-out hover:scale-105">
           Submit Order
         </button>
-        <button className="bg-accent-color hover:bg-accent-color/80 mt-4 cursor-pointer rounded-md p-2 text-white transition duration-300 ease-in-out hover:scale-105">
+        <button
+          className="bg-accent-color hover:bg-accent-color/80 mt-4 cursor-pointer rounded-md p-2 text-white transition duration-300 ease-in-out hover:scale-105"
+          onClick={handleReserve}
+        >
           Reserve Order
         </button>
       </div>

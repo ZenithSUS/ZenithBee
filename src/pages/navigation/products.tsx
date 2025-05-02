@@ -68,7 +68,18 @@ export default function Products() {
       </div>
 
       {orderDetail && (
-        <OrderDetails order={orderDetail} setCurrentOrder={setCurrentOrder} />
+        <OrderDetails
+          order={{
+            ...orderDetail,
+            tmpId: "temp-id",
+            size: "",
+            quantity: 1,
+            subtotal: 0,
+            user: "",
+            product: orderDetail,
+          }}
+          setCurrentOrder={setCurrentOrder}
+        />
       )}
     </div>
   );
