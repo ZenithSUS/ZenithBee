@@ -1,7 +1,15 @@
-import { useState } from "react";
+import { useState, useTransition, useMemo } from "react";
+import {
+  useAddToFavorite,
+  useGetFavoriteByUser,
+  useRemoveFromFavorite,
+} from "../hooks/favorites";
 import { ShowProducts } from "../utils/types";
 import { ProductModal } from "./modals";
-import { Star } from "lucide-react";
+import Favorite from "../assets/ui/fav-enable.png";
+import UnFavorite from "../assets/ui/fav-disable.png";
+import Loading from "./loading";
+import sleep from "../utils/functions/sleep";
 
 type ProductType = {
   product: ShowProducts;
@@ -9,12 +17,43 @@ type ProductType = {
 };
 
 export default function ProductCard({ product, setCurrentOrder }: ProductType) {
+  const userId = JSON.parse(localStorage.getItem("id") as string);
+  const { mutate: addToFavorite } = useAddToFavorite();
+  const { mutate: removeFromFavorite } = useRemoveFromFavorite();
+  const { data: favorite, isLoading } = useGetFavoriteByUser(userId);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isPending, startTransition] = useTransition();
+
+  if (isLoading) return <Loading />;
+
   const checkDetails = (name: string) => {
     if (setCurrentOrder) {
       setCurrentOrder(name);
     }
   };
+
+  const handleFavorite = () => {
+    if (isFavorite) {
+      startTransition(async () => {
+        removeFromFavorite(isFavorite.$id);
+        await sleep(1000);
+      });
+    } else {
+      startTransition(async () => {
+        addToFavorite({ user: userId, product: product.$id });
+        await sleep(1000);
+      });
+    }
+  };
+
+  const isFavorite = useMemo(
+    () =>
+      favorite?.find(
+        (favorite) =>
+          favorite.user.$id === userId && favorite.product.$id === product.$id,
+      ),
+    [favorite, userId, product.$id],
+  );
 
   return (
     <>
@@ -26,7 +65,19 @@ export default function ProductCard({ product, setCurrentOrder }: ProductType) {
       <div
         className={`card bg-base-100 card-md h-96 w-[calc(100%-1rem)] text-black shadow-sm dark:text-white`}
       >
-        <div className="card-header">
+        <div className="card-header relative">
+          <button
+            type="button"
+            disabled={isPending}
+            onClick={handleFavorite}
+            className="absolute top-2 right-2 z-10 rounded-full bg-black p-2 transition duration-300 ease-in-out hover:scale-105 disabled:opacity-50"
+          >
+            <img
+              src={isFavorite ? Favorite : UnFavorite}
+              alt="favorite"
+              className="h-6 w-6 cursor-pointer transition duration-300 ease-in-out hover:scale-105"
+            />
+          </button>
           <img
             src={product.image}
             alt={product.name}
@@ -39,15 +90,9 @@ export default function ProductCard({ product, setCurrentOrder }: ProductType) {
             <h2 className="card-title">{product.name}</h2>
             <p className="text-end text-2xl font-bold">${product.price}</p>
           </div>
-          <div className="flex w-full items-center justify-between">
-            <p className="text-gray-400">{product.foodType}</p>
-            <Star
-              size={20}
-              className="absolute top-3 right-3 cursor-pointer"
-              color="#FF5C28"
-              strokeWidth={2}
-            />
-          </div>
+
+          <p className="text-gray-400">{product.foodType}</p>
+
           <div className="card-actions justify-end">
             {setCurrentOrder && (
               <button

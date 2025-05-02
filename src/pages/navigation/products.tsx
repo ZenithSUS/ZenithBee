@@ -12,10 +12,9 @@ export default function Products() {
   const [currentOrder, setCurrentOrder] = useState<string>("");
   const [orderDetail, setOrderDetail] = useState<ShowProducts | null>(null);
   const { data: products, isLoading } = useGetProducts();
-  console.log(products);
 
   useEffect(() => {
-    if (currentOrder && products) {
+    if (currentOrder && products && products.length > 0) {
       const data = products.find((prod) => prod.name === currentOrder);
       setOrderDetail(data || null);
     } else {
@@ -57,7 +56,7 @@ export default function Products() {
         </div>
 
         {/*Products */}
-        <div className="place-items-center gap-5 md:grid md:grid-cols-2 lg:grid-cols-3">
+        <div className="flex flex-col place-items-center gap-2 md:grid md:grid-cols-2 md:gap-5 lg:grid-cols-3">
           {products?.map((product, index) => (
             <ProductCard
               key={index}
