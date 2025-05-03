@@ -6,10 +6,10 @@ import {
 } from "../hooks/favorites";
 import { ShowProducts } from "../utils/types";
 import { ProductModal } from "./modals";
+import { useQueryClient } from "@tanstack/react-query";
 import Favorite from "../assets/ui/fav-enable.png";
 import UnFavorite from "../assets/ui/fav-disable.png";
 import Loading from "./loading";
-import sleep from "../utils/functions/sleep";
 
 type ProductType = {
   product: ShowProducts;
@@ -18,11 +18,10 @@ type ProductType = {
 
 export default function ProductCard({ product, setCurrentOrder }: ProductType) {
   const userId = JSON.parse(localStorage.getItem("id") as string);
-  const { mutate: addToFavorite } = useAddToFavorite();
-  const { mutate: removeFromFavorite } = useRemoveFromFavorite();
   const { data: favorite, isLoading } = useGetFavoriteByUser(userId);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isPending, startTransition] = useTransition();
+  const queryClient = useQueryClient();
 
   if (isLoading) return <Loading />;
 
@@ -35,13 +34,13 @@ export default function ProductCard({ product, setCurrentOrder }: ProductType) {
   const handleFavorite = () => {
     if (isFavorite) {
       startTransition(async () => {
-        removeFromFavorite(isFavorite.$id);
-        await sleep(1000);
+        await useRemoveFromFavorite(isFavorite.$id);
+        await queryClient.invalidateQueries({ queryKey: ["favorites"] });
       });
     } else {
       startTransition(async () => {
-        addToFavorite({ user: userId, product: product.$id });
-        await sleep(1000);
+        await useAddToFavorite({ user: userId, product: product.$id });
+        await queryClient.invalidateQueries({ queryKey: ["favorites"] });
       });
     }
   };
@@ -72,7 +71,7 @@ export default function ProductCard({ product, setCurrentOrder }: ProductType) {
             <img
               src={isFavorite ? Favorite : UnFavorite}
               alt="favorite"
-              className="h-6 w-6 cursor-pointer transition duration-300 ease-in-out hover:scale-105"
+              className="h-6 w-6 cursor-pointer transition duration-300 ease-in-out hover:scale-105 dark:brightness-100 dark:invert"
             />
           </button>
           <img
@@ -93,14 +92,14 @@ export default function ProductCard({ product, setCurrentOrder }: ProductType) {
           <div className="card-actions justify-end">
             {setCurrentOrder && (
               <button
-                className="bg-accent-color cursor-pointer rounded-md p-2 font-semibold text-white transition duration-300 ease-in-out hover:scale-105"
+                className="bg-accent-color dark:bg-accent-dark-color cursor-pointer rounded-md p-2 font-semibold text-white transition duration-300 ease-in-out hover:scale-105"
                 onClick={() => checkDetails(product.name)}
               >
                 Order
               </button>
             )}
             <button
-              className="bg-accent-color cursor-pointer rounded-md p-2 font-semibold text-white transition duration-300 ease-in-out hover:scale-105"
+              className="bg-accent-color dark:bg-accent-dark-color cursor-pointer rounded-md p-2 font-semibold text-white transition duration-300 ease-in-out hover:scale-105"
               onClick={() => setIsModalOpen(!isModalOpen)}
             >
               View Product

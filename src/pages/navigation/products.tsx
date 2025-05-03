@@ -34,7 +34,7 @@ export default function Products() {
         {/*Hero Element*/}
         <div className="relative h-fit w-full overflow-hidden rounded-xl">
           <div className="absolute inset-0 z-10 flex items-center">
-            <div className="bg-accent-color clip-path-polygon flex h-full w-[50%] flex-col items-center justify-center gap-1 p-5">
+            <div className="bg-accent-color dark:bg-accent-dark-color clip-path-polygon flex h-full w-[50%] flex-col items-center justify-center gap-1 p-5">
               <h1 className="font-sans text-3xl font-bold">30% Off</h1>
               <p className="text-2xl font-bold text-white">Budget Meal</p>
             </div>
@@ -49,7 +49,11 @@ export default function Products() {
               key={index}
               className="flex cursor-pointer items-center gap-3 md:gap-1"
             >
-              <img src={filter.image} alt={filter.name} className="w-6" />
+              <img
+                src={filter.image}
+                alt={filter.name}
+                className="w-6 dark:brightness-100 dark:invert"
+              />
               <h2 className="text-md text-center">{filter.name}</h2>
             </div>
           ))}

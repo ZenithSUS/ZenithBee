@@ -1,55 +1,27 @@
-import { AxiosResponse } from "axios";
 import {
   addToFavorites,
   removeFromFavorites,
   getFavoriteByUser,
 } from "../actions/favorites";
-import {
-  useQuery,
-  useMutation,
-  UseBaseMutationResult,
-  QueryObserverResult,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useQuery, QueryObserverResult } from "@tanstack/react-query";
 import { AddFavorite, Favorite } from "../utils/types";
-import { toast } from "react-toastify";
 
-export const useAddToFavorite = (): UseBaseMutationResult<
-  AxiosResponse<AddFavorite>,
-  unknown,
-  AddFavorite,
-  unknown
-> => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (data: AddFavorite) => await addToFavorites(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["favorites"] });
-      queryClient.invalidateQueries({ queryKey: ["products"] });
-      toast.success("Added to favorites!");
-    },
-    onError: () => toast.error("Failed to add to favorites!"),
-  });
+export const useAddToFavorite = async (data: AddFavorite): Promise<void> => {
+  try {
+    await addToFavorites(data);
+  } catch (error) {
+    console.error("Error Reserved the order:", error);
+    throw error;
+  }
 };
 
-export const useRemoveFromFavorite = (): UseBaseMutationResult<
-  AxiosResponse<string>,
-  unknown,
-  string,
-  unknown
-> => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (id: string) => await removeFromFavorites(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["favorites"] });
-      queryClient.invalidateQueries({ queryKey: ["products"] });
-      toast.success("Removed from favorites!");
-    },
-    onError: () => toast.error("Failed to remove from favorites!"),
-  });
+export const useRemoveFromFavorite = async (id: string): Promise<void> => {
+  try {
+    await removeFromFavorites(id);
+  } catch (error) {
+    console.error("Error Reserved the order:", error);
+    throw error;
+  }
 };
 
 export const useGetFavoriteByUser = (

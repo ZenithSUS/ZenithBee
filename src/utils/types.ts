@@ -90,3 +90,7 @@ export type AddReserved = Omit<
   Reserved,
   "$id" | "$createdAt" | "$updatedAt" | "user" | "product" | "price"
 > & { user: string; product: string; price: string };
+
+export type ShowReserved = Reserved & {
+  reservedId: string;
+};

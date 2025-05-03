@@ -2,6 +2,7 @@ import {
   addToReserved,
   removeFromReserved,
   getAllReserved,
+  getReservedById,
 } from "../actions/reserved";
 import {
   useMutation,
@@ -10,26 +11,17 @@ import {
   useQueryClient,
   UseBaseMutationResult,
 } from "@tanstack/react-query";
-import { Reserved, AddReserved } from "../utils/types";
+import { Reserved, AddReserved, ShowReserved } from "../utils/types";
 import { toast } from "react-toastify";
 import { AxiosResponse } from "axios";
 
-export const useAddToReserved = (): UseBaseMutationResult<
-  AxiosResponse<AddReserved>,
-  unknown,
-  AddReserved,
-  unknown
-> => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (data: AddReserved) => await addToReserved(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["reserved"] });
-      queryClient.invalidateQueries({ queryKey: ["products"] });
-    },
-    onError: () => toast.error("Failed to add to reserved!"),
-  });
+export const useAddToReserved = async (data: AddReserved): Promise<void> => {
+  try {
+    await addToReserved(data);
+  } catch (error) {
+    console.error("Error Reserved the order:", error);
+    throw error;
+  }
 };
 
 export const useRemoveFromReserved = (): UseBaseMutationResult<
@@ -58,5 +50,17 @@ export const useGetAllReserved = (): QueryObserverResult<Reserved[]> => {
       return data;
     },
     queryKey: ["reserved"],
+  });
+};
+
+export const getReservedByUser = (
+  id: string,
+): QueryObserverResult<ShowReserved[]> => {
+  return useQuery<ShowReserved[]>({
+    queryFn: async () => {
+      const { data } = await getReservedById(id);
+      return data;
+    },
+    queryKey: ["reserved", id],
   });
 };

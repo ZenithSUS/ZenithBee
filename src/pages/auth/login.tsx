@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useTransition } from "react";
-import { AppwriteError } from "../../utils/types";
+import { handleLoginError } from "../../utils/functions/login-error";
 
 type loginSchemaType = z.infer<typeof loginSchema>;
 
@@ -32,40 +32,47 @@ export default function Login() {
   const login = async (data: loginSchemaType) => {
     try {
       if (Object.keys(form.formState.errors).length > 0) return;
+
       const { email, password } = data;
 
       startTransition(async () => {
-        const session = await account.createEmailPasswordSession(
-          email,
-          password,
-        );
-        localStorage.setItem("session", JSON.stringify(session.current));
+        try {
+          const session = await account.createEmailPasswordSession(
+            email,
+            password,
+          );
+          localStorage.setItem("session", JSON.stringify(session.current));
 
-        const acc = await account.get();
-        localStorage.setItem("name", JSON.stringify(acc.name));
-        localStorage.setItem("email", JSON.stringify(acc.email));
-        localStorage.setItem("joined", JSON.stringify(acc.$createdAt));
+          const acc = await account.get();
+          localStorage.setItem("name", JSON.stringify(acc.name));
+          localStorage.setItem("email", JSON.stringify(acc.email));
+          localStorage.setItem("joined", JSON.stringify(acc.$createdAt));
 
-        toast.success("Logged in successfully!");
-        return navigate("/");
+          toast.success("Logged in successfully!");
+          navigate("/");
+        } catch (error) {
+          handleLoginError(error);
+        }
       });
     } catch (error) {
-      const err = error as AppwriteError;
-      if (err.code === 400) toast.error("Invalid Credentials!");
-      if (err.code === 404) toast.error("User not found!");
-      if (err.code === 401) toast.error("Invalid Credentials!");
-      console.error("Login error:", error);
+      handleLoginError(error);
     }
   };
+
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <div className="3xl:w-1/3 3xl:p-14 mx-auto my-2 flex w-full flex-col justify-center rounded-2xl bg-[#ffffff] p-8 shadow-xl md:w-1/2 md:p-10 xl:w-2/5 2xl:w-2/5 2xl:p-12">
+      <div className="3xl:w-1/3 3xl:p-14 bg-primary-color dark:bg-primary-dark-color mx-auto my-2 flex w-full flex-col justify-center rounded-2xl p-8 shadow-xl md:w-1/2 md:p-10 xl:w-2/5 2xl:w-2/5 2xl:p-12">
         <div className="mx-auto flex flex-col items-center justify-center gap-3 pb-4">
           <div>
-            <img src={ZenithBee} alt="Logo" width="63" />
+            <img
+              src={ZenithBee}
+              alt="Logo"
+              width="63"
+              className="dark:brightness-100 dark:invert"
+            />
           </div>
 
-          <h1 className="my-auto text-3xl font-bold text-[#4B5563]">
+          <h1 className="my-auto text-3xl font-bold dark:text-white">
             ZenithBee
           </h1>
         </div>
@@ -75,10 +82,7 @@ export default function Login() {
 
         <form className="flex flex-col" onSubmit={form.handleSubmit(login)}>
           <div className="pb-2">
-            <label
-              htmlFor="email"
-              className="mb-2 block text-base font-medium text-[#111827]"
-            >
+            <label htmlFor="email" className="mb-2 block text-base font-medium">
               Email
             </label>
             <div className="relative text-gray-400">
@@ -98,7 +102,7 @@ export default function Login() {
           <div className="pb-6">
             <label
               htmlFor="password"
-              className="mb-2 block text-base font-medium text-[#111827]"
+              className="mb-2 block text-base font-medium"
             >
               Password
             </label>
@@ -118,16 +122,16 @@ export default function Login() {
           </div>
           <button
             type="submit"
-            className="focus:ring-primary-300 mb-6 w-full rounded-lg bg-[#FF5C28] px-5 py-2.5 text-center text-sm font-medium text-[#FFFFFF] focus:ring-4 focus:outline-hidden"
+            className="focus:ring-primary-300 bg-accent-color dark:bg-accent-dark-color mb-6 w-full rounded-lg px-5 py-2.5 text-center text-sm font-medium focus:ring-4 focus:outline-hidden disabled:bg-gray-500"
             disabled={isPending}
           >
-            Login
+            {isPending ? "Logging in..." : "Login"}
           </button>
           <div className="text-base font-light text-[#6B7280]">
-            Don't have an accout yet?{" "}
+            Don't have an account yet?{" "}
             <a
               onClick={() => navigate("/register")}
-              className="cursor-pointer font-medium text-[#FF5C28] hover:underline"
+              className="text-accent-color dark:text-accent-dark-color cursor-pointer font-medium hover:underline"
             >
               Sign Up
             </a>
