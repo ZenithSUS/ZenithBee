@@ -2,7 +2,7 @@ import { useState } from "react";
 import { SidebarNav } from "../utils/types";
 import { Link } from "react-router-dom";
 import { PowerCircleIcon } from "lucide-react";
-import { LogoutModal } from "./modals";
+import { LogoutModal } from "./modals/logout";
 import ProductIcon from "../assets/navigation/order.png";
 import HomeIcon from "../assets/navigation/home.png";
 import FavoriteIcon from "../assets/navigation/favorites.png";

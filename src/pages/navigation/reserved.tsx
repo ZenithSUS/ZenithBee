@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import { getReservedByUser } from "../../hooks/reserved";
 import { ShowReserved } from "../../utils/types";
+import { TrashIcon } from "lucide-react";
+import DeleteModal from "../../components/modals/delete-reserved";
 import Loading from "../../components/loading";
 
 export default function Reserved() {
   const userId = JSON.parse(localStorage.getItem("id") as string);
   const { data: reserved, isLoading } = getReservedByUser(userId);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [reserveId, setReserveId] = useState("");
+
   const [uniqueOrders, setUniqueOrders] = useState<
     {
       reservedId: string;
@@ -54,6 +59,11 @@ export default function Reserved() {
     setUniqueOrders(uniqueOrderGroups);
   }, [reserved]);
 
+  const handleRemoveFromReserved = async (reserveId: string) => {
+    setReserveId(reserveId);
+    setIsModalOpen(true);
+  };
+
   const toggleOrderDetails = (orderId: string) => {
     setUniqueOrders(
       uniqueOrders.map((order) =>
@@ -68,7 +78,17 @@ export default function Reserved() {
 
   return (
     <div className="mt-3 flex flex-col gap-5">
+      <DeleteModal
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+        reserveId={reserveId}
+        setReserveId={setReserveId}
+      />
       <h1 className="text-2xl font-bold">Reserved Orders</h1>
+
+      {uniqueOrders.length === 0 && (
+        <h1 className="text-lg">No Reserved Orders Found</h1>
+      )}
 
       <div className="flex flex-col gap-4">
         {uniqueOrders.map((orderGroup) => (
@@ -76,10 +96,7 @@ export default function Reserved() {
             key={orderGroup.reservedId}
             className="bg-primary-color dark:bg-primary-dark-color rounded-md border p-4"
           >
-            <div
-              className="flex cursor-pointer items-center justify-between"
-              onClick={() => toggleOrderDetails(orderGroup.reservedId)}
-            >
+            <div className="flex cursor-pointer items-center justify-between">
               <div>
                 <h2 className="text-lg font-bold">
                   Reserved ID: {orderGroup.reservedId}
@@ -91,7 +108,25 @@ export default function Reserved() {
                   Total Price: ${orderGroup.totalPrice.toFixed(2)}
                 </p>
               </div>
-              <div className="text-xl">{orderGroup.isOpen ? "▼" : "►"}</div>
+
+              <div className="flex items-center gap-5">
+                <div
+                  className="text-3xl"
+                  onClick={() => toggleOrderDetails(orderGroup.reservedId)}
+                  role="button"
+                >
+                  {orderGroup.isOpen ? "▼" : "►"}
+                </div>
+                <button type="button" className="text-xl">
+                  <TrashIcon
+                    className="h-6 w-6 cursor-pointer"
+                    onClick={() =>
+                      handleRemoveFromReserved(orderGroup.reservedId)
+                    }
+                    color="red"
+                  />
+                </button>
+              </div>
             </div>
 
             {orderGroup.isOpen && (

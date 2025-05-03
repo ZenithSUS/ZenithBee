@@ -5,7 +5,7 @@ import {
   useRemoveFromFavorite,
 } from "../hooks/favorites";
 import { ShowProducts } from "../utils/types";
-import { ProductModal } from "./modals";
+import { ProductModal } from "./modals/product";
 import { useQueryClient } from "@tanstack/react-query";
 import Favorite from "../assets/ui/fav-enable.png";
 import UnFavorite from "../assets/ui/fav-disable.png";

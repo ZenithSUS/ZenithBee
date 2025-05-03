@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { OrderDetail } from "../utils/types";
 import { FaRegWindowClose, FaTrashAlt } from "react-icons/fa";
-import { ReserveModal } from "./modals";
+import { ReserveModal } from "./modals/reserved";
 
 type OrderType = {
   order: OrderDetail;
@@ -24,6 +24,14 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [orders, setOrders] = useState<OrderDetail[]>([]);
   const [isVisible, setIsVisible] = useState(false);
+
+  const priceNumber = parseFloat(order.price);
+  const priceSizes = {
+    small: priceNumber.toFixed(2),
+    medium: (priceNumber + priceNumber * 0.35).toFixed(2),
+    large: (priceNumber + priceNumber * 0.5).toFixed(2),
+    "extra-large": (priceNumber + priceNumber * 0.65).toFixed(2),
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -53,19 +61,18 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
     try {
       if (Object.keys(form.formState.errors).length > 0) return;
       let finalPrice = 0;
-      const price = parseFloat(order.price);
       switch (data.size) {
         case "small":
-          finalPrice = price;
+          finalPrice = Number(priceSizes.small);
           break;
         case "medium":
-          finalPrice = price + price * 0.35;
+          finalPrice = Number(priceSizes.medium);
           break;
         case "large":
-          finalPrice = price + price * 0.5;
+          finalPrice = Number(priceSizes.large);
           break;
         case "extra-large":
-          finalPrice = price + price * 0.65;
+          finalPrice = Number(priceSizes["extra-large"]);
           break;
         default:
           break;
@@ -130,8 +137,22 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
       />
       <h1 className="text-3xl font-bold">My Order</h1>
       <div className="flex flex-col">
-        <h2 className="text-lg">Delivery address</h2>
-        <h1 className="text-3xl font-bold">1342 Morris Street</h1>
+        <div className="grid grid-cols-2">
+          <div>
+            <h2 className="text-lg">Delivery address</h2>
+            <h1 className="text-3xl font-bold">1342 Morris Street</h1>
+          </div>
+
+          <div className="flex flex-col items-end gap-2">
+            <h2 className="text-lg">Size Prices</h2>
+            <div className="grid grid-cols-2 gap-1">
+              <span className="text-sm">S: ${priceSizes.small}</span>
+              <span className="text-sm">M: ${priceSizes.medium}</span>
+              <span className="text-sm">L: ${priceSizes.large}</span>
+              <span className="text-sm">XL: ${priceSizes["extra-large"]}</span>
+            </div>
+          </div>
+        </div>
 
         <div className="mt-4 grid grid-cols-2 gap-4">
           <div className="grid grid-cols-1 gap-1.5 self-start">
@@ -187,7 +208,7 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
                   {form.formState.errors.size?.message}
                 </span>
               </div>
-              <button className="bg-accent-color hover:bg-accent-color/80 mt-4 cursor-pointer rounded-md p-2 text-white transition duration-300 ease-in-out hover:scale-105">
+              <button className="bg-accent-color dark:bg-accent-dark-color dark:hover:bg-accent-dark-color/80 hover:bg-accent-color/80 mt-4 cursor-pointer rounded-md p-2 text-white transition duration-300 ease-in-out hover:scale-105">
                 Add
               </button>
             </form>
@@ -233,12 +254,16 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
       </div>
 
       <div className="grid grid-cols-2 gap-2">
-        <button className="bg-accent-color hover:bg-accent-color/80 mt-4 cursor-pointer rounded-md p-2 text-white transition duration-300 ease-in-out hover:scale-105">
+        <button
+          className="bg-accent-color hover:bg-accent-color/80 mt-4 cursor-pointer rounded-md p-2 text-white transition duration-300 ease-in-out hover:scale-105 disabled:cursor-not-allowed disabled:bg-gray-500"
+          disabled={orders.length === 0}
+        >
           Submit Order
         </button>
         <button
-          className="bg-accent-color hover:bg-accent-color/80 mt-4 cursor-pointer rounded-md p-2 text-white transition duration-300 ease-in-out hover:scale-105"
+          className="bg-accent-color hover:bg-accent-color/80 mt-4 cursor-pointer rounded-md p-2 text-white transition duration-300 ease-in-out hover:scale-105 disabled:cursor-not-allowed disabled:bg-gray-500"
           onClick={handleReserve}
+          disabled={orders.length === 0}
         >
           Reserve Order
         </button>
