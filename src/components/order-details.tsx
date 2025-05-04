@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { OrderDetail } from "../utils/types";
 import { FaRegWindowClose, FaTrashAlt } from "react-icons/fa";
+import { OrderModal } from "./modals/order";
 import { ReserveModal } from "./modals/reserved";
 
 type OrderType = {
@@ -21,7 +22,8 @@ const orderSchema = z.object({
 
 export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
   const [total, setTotal] = useState<number>(0);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [isReservedModalOpen, setIsReservedModalOpen] = useState(false);
   const [orders, setOrders] = useState<OrderDetail[]>([]);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -95,8 +97,12 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
     }
   };
 
+  const handleOrder = () => {
+    setIsOrderModalOpen(true);
+  };
+
   const handleReserve = () => {
-    setIsModalOpen(true);
+    setIsReservedModalOpen(true);
   };
 
   const handleClose = () => {
@@ -125,8 +131,14 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
       }`}
     >
       <ReserveModal
-        isModalOpen={isModalOpen}
-        setIsModalOpen={setIsModalOpen}
+        isModalOpen={isReservedModalOpen}
+        setIsModalOpen={setIsReservedModalOpen}
+        orderDetail={orders}
+      />
+
+      <OrderModal
+        isModalOpen={isOrderModalOpen}
+        setIsModalOpen={setIsOrderModalOpen}
         orderDetail={orders}
       />
       <FaRegWindowClose
@@ -257,6 +269,7 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
         <button
           className="bg-accent-color hover:bg-accent-color/80 mt-4 cursor-pointer rounded-md p-2 text-white transition duration-300 ease-in-out hover:scale-105 disabled:cursor-not-allowed disabled:bg-gray-500"
           disabled={orders.length === 0}
+          onClick={handleOrder}
         >
           Submit Order
         </button>

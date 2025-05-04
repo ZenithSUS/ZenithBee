@@ -4,6 +4,7 @@ import { useRemoveFromReserved } from "../../hooks/reserved";
 import { FaRegWindowClose } from "react-icons/fa";
 import { useEffect, useState, useTransition } from "react";
 import { toast } from "react-toastify";
+
 Modal.setAppElement("#root");
 
 type DeleteModalProps = {
@@ -46,7 +47,7 @@ const DeleteModal = ({
     });
     setReserveId("");
     if (!isPending) {
-      toast.success("Reservation deleted successfully!");
+      toast.success("Deleted successfully!");
     }
   };
 

@@ -1,9 +1,3 @@
-export type SidebarNav = {
-  name: string;
-  image: string;
-  navigate: string;
-};
-
 export type AppwriteError = {
   code: number;
   message: string;
@@ -75,6 +69,31 @@ export type AddFavorite = {
   product: string;
 };
 
+export type Order = {
+  $id: string;
+  $createdAt: string;
+  $updatedAt: string;
+  user: Users;
+  product: Products;
+  status: string;
+  quantity: number | string;
+  size: string;
+  price: number | string;
+};
+
+export type ShowOrder = Order & {
+  orderId: string;
+  totalPrice: number;
+  totalQuantity: number;
+  orders: ShowProducts;
+  isOpen: boolean;
+};
+
+export type AddOrder = Omit<
+  Order,
+  "$id" | "$createdAt" | "$updatedAt" | "status" | "user" | "product"
+> & { user: string; product: string };
+
 export type Reserved = {
   $id: string;
   $createdAt: string;
@@ -93,4 +112,8 @@ export type AddReserved = Omit<
 
 export type ShowReserved = Reserved & {
   reservedId: string;
+  totalPrice: number;
+  totalQuantity: number;
+  items: ShowProducts;
+  isOpen: boolean;
 };

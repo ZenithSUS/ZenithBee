@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { SidebarNav } from "../utils/types";
 import { Link } from "react-router-dom";
 import { PowerCircleIcon } from "lucide-react";
 import { LogoutModal } from "./modals/logout";
@@ -8,6 +7,12 @@ import HomeIcon from "../assets/navigation/home.png";
 import FavoriteIcon from "../assets/navigation/favorites.png";
 import OrderIcon from "../assets/navigation/bell.png";
 import BookIcon from "../assets/navigation/reserved.png";
+
+type SidebarNav = {
+  name: string;
+  image: string;
+  navigate: string;
+};
 
 const SidebarNavigation: SidebarNav[] = [
   {

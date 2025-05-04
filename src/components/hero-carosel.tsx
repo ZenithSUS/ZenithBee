@@ -1,12 +1,11 @@
+import ZenithBee1 from "../assets/ui/zenithbee1.png";
+
 export default function HeroCarosel() {
   return (
     <>
       <div className="carousel w-full">
         <div id="item1" className="carousel-item w-full">
-          <img
-            src="https://img.daisyui.com/images/stock/photo-1625726411847-8cbb60cc71e6.webp"
-            className="w-full"
-          />
+          <img src={ZenithBee1} className="h-[300px] w-full object-center" />
         </div>
         <div id="item2" className="carousel-item w-full">
           <img

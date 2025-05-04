@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { getReservedByUser } from "../../hooks/reserved";
 import { ShowReserved } from "../../utils/types";
 import { TrashIcon } from "lucide-react";
@@ -11,52 +11,16 @@ export default function Reserved() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [reserveId, setReserveId] = useState("");
 
-  const [uniqueOrders, setUniqueOrders] = useState<
-    {
-      reservedId: string;
-      items: ShowReserved[];
-      isOpen: boolean;
-      totalPrice: number;
-      totalQuantity: number;
-    }[]
-  >([]);
+  const [uniqueOrders, setUniqueOrders] = useState<ShowReserved[]>([]);
 
   useEffect(() => {
-    if (!reserved) return;
-
-    const reservedMap = new Map();
-
-    reserved.forEach((order) => {
-      if (!reservedMap.has(order.reservedId)) {
-        reservedMap.set(order.reservedId, []);
-      }
-      reservedMap.get(order.reservedId).push(order);
-    });
-
-    const uniqueOrderGroups = Array.from(reservedMap.entries()).map(
-      ([id, items]) => {
-        const totalPrice = items.reduce(
-          (sum: number, item: { price: string }) =>
-            sum + (parseFloat(item.price) || 0),
-          0,
-        );
-        const totalQuantity = items.reduce(
-          (sum: number, item: { quantity: string }) =>
-            sum + (parseInt(item.quantity) || 0),
-          0,
-        );
-
-        return {
-          reservedId: id,
-          items,
-          isOpen: false,
-          totalPrice,
-          totalQuantity,
-        };
-      },
-    );
-
-    setUniqueOrders(uniqueOrderGroups);
+    if (reserved) {
+      setUniqueOrders([
+        ...new Map(
+          reserved.map((item) => [item.reservedId, { ...item, isOpen: false }]),
+        ).values(),
+      ]);
+    }
   }, [reserved]);
 
   const handleRemoveFromReserved = async (reserveId: string) => {
@@ -131,32 +95,33 @@ export default function Reserved() {
 
             {orderGroup.isOpen && (
               <div className="mt-3 border-t pt-3">
-                {orderGroup.items.map((item) => (
-                  <div
-                    key={`${orderGroup.reservedId}-${item.product.$id}`}
-                    className="mb-3 border-b pb-2 last:border-0"
-                  >
-                    <div className="flex justify-between">
-                      <div className="grid grid-cols-1">
-                        <h3 className="text-lg font-semibold">
-                          {item.product.name}
-                        </h3>
-                        <p>Size: {item.size}</p>
-                        <p>Quantity: {item.quantity}</p>
-                        <p>
-                          Price: $
-                          {Number(parseFloat(String(item.price)).toFixed(2))}
-                        </p>
-                      </div>
+                {Array.isArray(orderGroup.items) &&
+                  orderGroup.items.map((item) => (
+                    <div
+                      key={`${item.$id}-${orderGroup.reservedId}-${item.product.$id}`}
+                      className="mb-3 border-b pb-2 last:border-0"
+                    >
+                      <div className="flex justify-between">
+                        <div className="grid grid-cols-1">
+                          <h3 className="text-lg font-semibold">
+                            {item.product.name}
+                          </h3>
+                          <p>Size: {item.size}</p>
+                          <p>Quantity: {item.quantity}</p>
+                          <p>
+                            Price: $
+                            {Number(parseFloat(String(item.price)).toFixed(2))}
+                          </p>
+                        </div>
 
-                      <img
-                        src={item.product.image}
-                        alt={item.product.name}
-                        className="h-25 w-25 rounded-md object-cover"
-                      />
+                        <img
+                          src={item.product.image}
+                          alt={item.product.name}
+                          className="h-25 w-25 rounded-md object-cover"
+                        />
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             )}
           </div>

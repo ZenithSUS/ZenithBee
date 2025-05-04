@@ -2,21 +2,21 @@ import Modal from "react-modal";
 import { FaRegWindowClose } from "react-icons/fa";
 import { OrderDetail } from "../../utils/types";
 import { useEffect, useState, useTransition } from "react";
-import { useAddToReserved } from "../../hooks/reserved";
+import { useCreateOrder } from "../../hooks/orders";
 import { v4 as uuidv4 } from "uuid";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 
-type ReserveModal = {
+type OrderModal = {
   isModalOpen: boolean;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export function ReserveModal({
+export function OrderModal({
   isModalOpen,
   setIsModalOpen,
   orderDetail,
-}: ReserveModal & {
+}: OrderModal & {
   orderDetail: OrderDetail[];
 }) {
   const [modalScale, setModalScale] = useState(false);
@@ -26,11 +26,11 @@ export function ReserveModal({
 
   const navigate = useNavigate();
 
-  const handleReserve = () => {
-    const reservedId = uuidv4();
+  const handleOrder = () => {
+    const orderId = uuidv4();
     orderDetail.forEach((order) => {
       const data = {
-        reservedId: reservedId,
+        orderId: orderId,
         user: JSON.parse(localStorage.getItem("id") || "") as string,
         product: order.$id as string,
         size: order.size,
@@ -38,12 +38,12 @@ export function ReserveModal({
         price: order.subtotal.toFixed(2).toString() as string,
       };
       startTransition(async () => {
-        await useAddToReserved(data);
-        queryClient.invalidateQueries({ queryKey: ["reserved"] });
+        await useCreateOrder(data);
+        queryClient.invalidateQueries({ queryKey: ["order"] });
       });
     });
     if (!isPending) {
-      navigate("/reserved");
+      navigate("/orders");
     }
   };
 
@@ -78,9 +78,7 @@ export function ReserveModal({
           }`}
         >
           <div className="flex items-center justify-between gap-5">
-            <h1 className="text-center text-2xl font-bold">
-              Reserve Order Details
-            </h1>
+            <h1 className="text-center text-2xl font-bold">Order Details</h1>
             <FaRegWindowClose
               className="cursor-pointer transition duration-300 ease-in-out hover:scale-105"
               color="red"
@@ -124,10 +122,10 @@ export function ReserveModal({
           </div>
           <button
             className="bg-accent-color hover:bg-accent-hover dark:hover:bg-accent-hover/50 dark:bg-accent-dark-color mt-3 cursor-pointer p-2 transition duration-300 ease-in-out disabled:bg-gray-500"
-            onClick={handleReserve}
+            onClick={handleOrder}
             disabled={isPending}
           >
-            {isPending ? "Reserving..." : "Reserve Order"}
+            {isPending ? "Ordering..." : "Order"}
           </button>
         </div>
       </div>
