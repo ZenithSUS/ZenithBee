@@ -12,6 +12,7 @@ const Products = lazy(() => import("./pages/navigation/products"));
 const Favorites = lazy(() => import("./pages/navigation/favorites"));
 const Orders = lazy(() => import("./pages/navigation/orders"));
 const Reserved = lazy(() => import("./pages/navigation/reserved"));
+const Account = lazy(() => import("./pages/navigation/account"));
 
 export const router = createBrowserRouter([
   {
@@ -56,6 +57,14 @@ export const router = createBrowserRouter([
         element: (
           <Suspense fallback={<Loading />}>
             <Reserved />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/account",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <Account />
           </Suspense>
         ),
       },

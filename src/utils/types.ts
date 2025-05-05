@@ -25,6 +25,11 @@ export type AddUser = Omit<Users, "$id" | "$createdAt" | "$updatedAt"> & {
   userId: string;
 };
 
+export type ShowUser = Partial<Users> & {
+  fullname: string;
+  address: string[];
+};
+
 export type Products = {
   $id: string;
   $createdAt: string;

@@ -7,6 +7,7 @@ import HomeIcon from "../assets/navigation/home.png";
 import FavoriteIcon from "../assets/navigation/favorites.png";
 import OrderIcon from "../assets/navigation/bell.png";
 import BookIcon from "../assets/navigation/reserved.png";
+import UserIcon from "../assets/navigation/user.png";
 
 type SidebarNav = {
   name: string;
@@ -40,6 +41,11 @@ const SidebarNavigation: SidebarNav[] = [
     image: BookIcon,
     navigate: "/reserved",
   },
+  {
+    name: "Account",
+    image: UserIcon,
+    navigate: "/account",
+  },
 ];
 
 export default function Sidebar() {
@@ -64,7 +70,7 @@ export default function Sidebar() {
           <img
             src={nav.image}
             alt={nav.name}
-            className="${ h-6 w-6 cursor-pointer transition duration-300 ease-in-out hover:scale-110 dark:brightness-100 dark:invert"
+            className="h-6 w-6 cursor-pointer transition duration-300 ease-in-out hover:scale-110 dark:brightness-100 dark:invert"
           />
           {hoveredItem === nav.name && (
             <div className="${ dark:bg-accent-dark-color bg-accent-color absolute left-8 z-10 ml-2 rounded px-2 py-1 whitespace-nowrap text-white">

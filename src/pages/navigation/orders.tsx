@@ -2,13 +2,10 @@ import { useState, useEffect } from "react";
 import { useGetOrderByUser } from "../../hooks/orders";
 import { ShowOrder } from "../../utils/types";
 import Loading from "../../components/loading";
-import { TrashIcon } from "lucide-react";
 
 export default function Orders() {
   const userId = JSON.parse(localStorage.getItem("id") as string);
   const { data: orders, isLoading } = useGetOrderByUser(userId);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [orderId, setOrderId] = useState("");
   const [uniqueOrders, setUniqueOrders] = useState<ShowOrder[]>([]);
 
   useEffect(() => {
@@ -22,11 +19,6 @@ export default function Orders() {
   }, [orders]);
 
   if (isLoading) return <Loading />;
-
-  const handleRemoveOrder = async (orderId: string) => {
-    setOrderId(orderId);
-    setIsModalOpen(true);
-  };
 
   const toggleOrderDetails = (orderId: string) => {
     setUniqueOrders(
@@ -51,7 +43,11 @@ export default function Orders() {
             key={orderGroup.orderId}
             className="bg-primary-color dark:bg-primary-dark-color rounded-md border p-4"
           >
-            <div className="flex cursor-pointer items-center justify-between">
+            <div
+              className="flex cursor-pointer items-center justify-between"
+              onClick={() => toggleOrderDetails(orderGroup.orderId)}
+              role="button"
+            >
               <div>
                 <h2 className="text-lg font-bold">
                   Order ID: {orderGroup.orderId}
@@ -66,20 +62,7 @@ export default function Orders() {
               </div>
 
               <div className="flex items-center gap-5">
-                <div
-                  className="text-3xl"
-                  onClick={() => toggleOrderDetails(orderGroup.orderId)}
-                  role="button"
-                >
-                  {orderGroup.isOpen ? "▼" : "►"}
-                </div>
-                <button type="button" className="text-xl">
-                  <TrashIcon
-                    className="h-6 w-6 cursor-pointer"
-                    onClick={() => handleRemoveOrder(orderGroup.orderId)}
-                    color="red"
-                  />
-                </button>
+                <div className="text-3xl">{orderGroup.isOpen ? "▼" : "►"}</div>
               </div>
             </div>
 

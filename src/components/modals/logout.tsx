@@ -62,13 +62,13 @@ export function LogoutModal({ isModalOpen, setIsModalOpen }: LogoutModal) {
           <div className="flex items-center justify-end gap-4 pt-4">
             <button
               onClick={() => setIsModalOpen(false)}
-              className="bg-accent-color dark:bg-accent-dark-color cursor-pointer rounded-md p-2 text-sm font-bold"
+              className="bg-accent-color dark:bg-accent-dark-color cursor-pointer rounded-md p-2 text-sm font-bold text-white"
             >
               Cancel
             </button>
             <button
               onClick={handleLogout}
-              className="cursor-pointer rounded-md bg-red-600 p-2 text-sm font-bold"
+              className="cursor-pointer rounded-md bg-red-600 p-2 text-sm font-bold text-white"
             >
               Logout
             </button>

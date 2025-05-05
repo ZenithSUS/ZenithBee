@@ -59,7 +59,7 @@ export default function ProductCard({ product, setCurrentOrder }: ProductType) {
         product={product}
       />
       <div
-        className={`card bg-base-100 card-md h-96 w-[calc(100%-1rem)] text-black shadow-sm dark:text-white`}
+        className={`card bg-primary-color dark:bg-primary-dark-color card-md h-96 w-[calc(100%-1rem)] text-black shadow-sm dark:text-white`}
       >
         <div className="card-header relative">
           <button
