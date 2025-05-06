@@ -2,6 +2,7 @@ import Loading from "../../components/loading";
 import { useState } from "react";
 import { useGetUserById } from "../../hooks/users";
 import AddressModal from "../../components/modals/address";
+import ChangePasswordModal from "../../components/modals/change-password";
 import formatDate from "../../utils/functions/format-date";
 
 export default function Account() {
@@ -26,6 +27,10 @@ export default function Account() {
         setIsModalOpen={() => closeModal()}
         userId={userId}
         addresses={userInfo?.address || []}
+      />
+      <ChangePasswordModal
+        isModalOpen={activeModal === "changePassword"}
+        setIsModalOpen={() => closeModal()}
       />
       <h1 className="text-2xl font-bold">Account</h1>
 
@@ -73,7 +78,10 @@ export default function Account() {
             >
               Add/Edit Address
             </button>
-            <button className="bg-accent-color dark:bg-accent-dark-color hover:bg-accent-color/80 dark:hover:bg-accent-dark-color/80 cursor-pointer rounded-md p-2 text-white transition duration-300 ease-in-out hover:scale-105">
+            <button
+              className="bg-accent-color dark:bg-accent-dark-color hover:bg-accent-color/80 dark:hover:bg-accent-dark-color/80 cursor-pointer rounded-md p-2 text-white transition duration-300 ease-in-out hover:scale-105"
+              onClick={() => openModal("changePassword")}
+            >
               Change Password
             </button>
             <button className="bg-accent-color dark:bg-accent-dark-color hover:bg-accent-color/80 dark:hover:bg-accent-dark-color/80 cursor-pointer rounded-md p-2 text-white transition duration-300 ease-in-out hover:scale-105">

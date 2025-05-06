@@ -1,33 +1,33 @@
-import { useGetProducts } from "../hooks/products";
-import Loading from "./loading";
+import { ProductModal } from "./modals/product";
+import { useState } from "react";
+import { ShowProducts } from "../utils/types";
 
-export default function FoodCarousel() {
-  const { data: products, isLoading } = useGetProducts();
+type CarsoselType = {
+  product: ShowProducts;
+};
 
-  if (isLoading) return <Loading />;
+export default function FoodCarousel({ product }: CarsoselType) {
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   return (
-    <div className="w-full overflow-x-auto py-6">
-      <div className="flex space-x-6 px-4">
-        {products?.map((product, index) => (
-          <div
-            key={index}
-            className="bg-primary-color dark:bg-primary-dark-color w-64 flex-none rounded-2xl shadow-md transition-shadow duration-300 hover:shadow-lg"
-          >
-            <img
-              src={product.image}
-              alt={product.name}
-              className="h-40 w-full rounded-t-2xl object-cover"
-            />
-            <div className="p-4">
-              <div className="mb-2 flex items-center justify-between">
-                <h2 className="text-lg font-semibold">{product.name}</h2>
-              </div>
-              <p className="text-gray-600">{product.price}</p>
-              <p className="text-sm text-gray-400">{product.foodType}</p>
-            </div>
-          </div>
-        ))}
+    <div className="bg-primary-color dark:bg-primary-dark-color w-64 flex-none rounded-2xl shadow-md transition-shadow duration-300 hover:shadow-lg">
+      <ProductModal
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+        product={product}
+      />
+      <img
+        src={product.image}
+        alt={product.name}
+        className="h-40 w-full rounded-t-2xl object-cover"
+        onClick={() => setIsModalOpen(!isModalOpen)}
+      />
+      <div className="p-4">
+        <div className="mb-2 flex items-center justify-between">
+          <h2 className="text-lg font-semibold">{product.name}</h2>
+        </div>
+        <p className="text-gray-600">{product.price}</p>
+        <p className="text-sm text-gray-400">{product.foodType}</p>
       </div>
     </div>
   );

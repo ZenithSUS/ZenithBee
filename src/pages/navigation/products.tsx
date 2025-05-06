@@ -1,6 +1,6 @@
+// import { productFilter } from "../../data/product-filter";
 import { useState, useEffect } from "react";
 import { useGetProducts } from "../../hooks/products";
-import { productFilter } from "../../data/product-filter";
 import { ShowProducts } from "../../utils/types";
 import HeroImg from "../../assets/ui/hero.png";
 import SearchBar from "../../components/searchbar";
@@ -42,7 +42,7 @@ export default function Products() {
           <img src={HeroImg} alt="hero" className="h-60 w-full object-cover" />
         </div>
 
-        {/* Product Filter*/}
+        {/* Product Filter
         <div className="bg-primary-color dark:bg-primary-dark-color sticky top-0 z-[20] flex w-full items-center justify-baseline gap-10 overflow-auto px-2 py-4 md:gap-5">
           {productFilter.map((filter, index) => (
             <div
@@ -57,7 +57,7 @@ export default function Products() {
               <h2 className="text-md text-center">{filter.name}</h2>
             </div>
           ))}
-        </div>
+        </div> */}
 
         {/*Products */}
         <div className="flex flex-col place-items-center gap-2 md:grid md:grid-cols-2 md:gap-5 lg:grid-cols-3">

@@ -122,7 +122,7 @@ export default function Login() {
           </div>
           <button
             type="submit"
-            className="focus:ring-primary-300 bg-accent-color dark:bg-accent-dark-color mb-6 w-full rounded-lg px-5 py-2.5 text-center text-sm font-medium focus:ring-4 focus:outline-hidden disabled:bg-gray-500"
+            className="focus:ring-primary-300 bg-accent-color dark:bg-accent-dark-color mb-6 w-full rounded-lg px-5 py-2.5 text-center text-sm font-medium text-white focus:ring-4 focus:outline-hidden disabled:bg-gray-500"
             disabled={isPending}
           >
             {isPending ? "Logging in..." : "Login"}

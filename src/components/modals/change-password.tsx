@@ -1,48 +1,39 @@
 import Modal from "react-modal";
-import UserSvg from "../../assets/svg/user";
+import changePassword from "../../utils/functions/change-password";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useUpdateUserAddress } from "../../hooks/users";
-import { toast } from "react-toastify";
 import { FaRegWindowClose } from "react-icons/fa";
 import { useEffect, useState, useTransition } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import PasswordSvg from "../../assets/svg/password";
 
-type AddressModalProps = {
+type ChangePasswordModalProps = {
   isModalOpen: boolean;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  userId: string;
-  addresses: string[];
 };
 
-type AddressFormSchemaType = z.infer<typeof AddressFormSchema>;
+type ChangePasswordFormSchemaType = z.infer<typeof ChangePasswordFormSchema>;
 
-const AddressFormSchema = z.object({
-  address1: z.string().min(1, { message: "Address is required!" }),
-  address2: z.string().optional(),
-  address3: z.string().optional(),
-});
+const ChangePasswordFormSchema = z
+  .object({
+    oldPassword: z.string().min(1, { message: "Old Password is required" }),
+    newPassword: z.string().min(1, { message: "New Password is required" }),
+    confirmPassword: z
+      .string()
+      .min(1, { message: "Confirm Password is required" }),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
-const AddressModal = ({
+const ChangePasswordModal = ({
   isModalOpen,
   setIsModalOpen,
-  userId,
-  addresses,
-}: AddressModalProps) => {
-  const queryClient = useQueryClient();
+}: ChangePasswordModalProps) => {
   const [isPending, startTransition] = useTransition();
   const [modalScale, setModalScale] = useState(false);
   const [internalOpen, setInternalOpen] = useState(false);
-
-  const form = useForm<AddressFormSchemaType>({
-    resolver: zodResolver(AddressFormSchema),
-    defaultValues: {
-      address1: addresses[0],
-      address2: addresses[1],
-      address3: addresses[2],
-    },
-  });
 
   useEffect(() => {
     if (isModalOpen) {
@@ -58,20 +49,24 @@ const AddressModal = ({
     }
   }, [isModalOpen]);
 
-  const submitAddresses = (data: AddressFormSchemaType) => {
+  const form = useForm<ChangePasswordFormSchemaType>({
+    resolver: zodResolver(ChangePasswordFormSchema),
+    defaultValues: {
+      oldPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    },
+  });
+
+  const submitChangePassword = (data: ChangePasswordFormSchemaType) => {
     try {
       if (Object.keys(form.formState.errors).length > 0) return;
-      const addresses = [data.address1, data.address2, data.address3];
-      const addressesFinal = addresses.filter(
-        (address): address is string => address !== undefined && address !== "",
-      );
 
       startTransition(async () => {
-        await useUpdateUserAddress(userId, addressesFinal);
-        await queryClient.invalidateQueries({ queryKey: ["user"] });
+        await changePassword(data.newPassword, data.oldPassword);
       });
       setIsModalOpen(false);
-      toast.success("Updated Successfully!");
+      form.reset();
     } catch (error) {
       console.error(error);
     }
@@ -94,7 +89,7 @@ const AddressModal = ({
         }`}
       >
         <div className="mb-2 flex items-start justify-between">
-          <h3 className="text-xl font-semibold">Add address</h3>
+          <h3 className="text-xl font-semibold">Change Password</h3>
           <button
             type="button"
             className="ml-auto inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900"
@@ -106,70 +101,70 @@ const AddressModal = ({
 
         <form
           className="flex flex-col"
-          onSubmit={form.handleSubmit(submitAddresses)}
+          onSubmit={form.handleSubmit(submitChangePassword)}
         >
           <div>
             <label
-              htmlFor="address1"
+              htmlFor="oldPassword"
               className="mb-2 block text-base font-medium"
             >
-              Address 1
+              Old Password
             </label>
             <div className="relative text-gray-400">
-              {UserSvg()}
+              {PasswordSvg()}
               <input
-                type="text"
-                {...form.register("address1")}
-                id="address1"
-                className="mb-2 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 px-4 py-3 pl-12 text-gray-600 ring-3 ring-transparent focus:border-transparent focus:ring-1 focus:ring-gray-400 focus:outline-hidden sm:text-sm"
-                placeholder="Address 1"
+                type="password"
+                {...form.register("oldPassword")}
+                id="oldPassword"
+                placeholder="••••••••••"
+                className="mb-2 block w-full rounded-lg rounded-l-lg border border-gray-300 bg-gray-50 p-2.5 px-4 py-3 pl-12 text-gray-600 ring-3 ring-transparent focus:border-transparent focus:ring-1 focus:ring-gray-400 focus:outline-hidden sm:text-sm"
               />
             </div>
             <span className="h-6 text-red-500">
-              {form.formState.errors.address1?.message}
+              {form.formState.errors.oldPassword?.message}
             </span>
           </div>
           <div>
             <label
-              htmlFor="address2"
+              htmlFor="newPassword"
               className="mb-2 block text-base font-medium"
             >
-              Address 2 {"(Optional)"}
+              New Password
             </label>
             <div className="relative text-gray-400">
-              {UserSvg()}
+              {PasswordSvg()}
               <input
-                type="text"
-                {...form.register("address2")}
-                id="address2"
-                className="mb-2 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 px-4 py-3 pl-12 text-gray-600 ring-3 ring-transparent focus:border-transparent focus:ring-1 focus:ring-gray-400 focus:outline-hidden sm:text-sm"
-                placeholder="Address 2"
+                type="password"
+                {...form.register("newPassword")}
+                id="newPassword"
+                placeholder="••••••••••"
+                className="mb-2 block w-full rounded-lg rounded-l-lg border border-gray-300 bg-gray-50 p-2.5 px-4 py-3 pl-12 text-gray-600 ring-3 ring-transparent focus:border-transparent focus:ring-1 focus:ring-gray-400 focus:outline-hidden sm:text-sm"
               />
             </div>
             <span className="h-6 text-red-500">
-              {form.formState.errors.address2?.message}
+              {form.formState.errors.newPassword?.message}
             </span>
           </div>
 
           <div>
             <label
-              htmlFor="address3"
+              htmlFor="confirmPassword"
               className="mb-2 block text-base font-medium"
             >
-              Address 3 {"(Optional)"}
+              Confirm Password
             </label>
             <div className="relative text-gray-400">
-              {UserSvg()}
+              {PasswordSvg()}
               <input
-                type="text"
-                {...form.register("address3")}
-                id="address3"
-                className="mb-2 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 px-4 py-3 pl-12 text-gray-600 ring-3 ring-transparent focus:border-transparent focus:ring-1 focus:ring-gray-400 focus:outline-hidden sm:text-sm"
-                placeholder="Address 3"
+                type="password"
+                {...form.register("confirmPassword")}
+                id="confirmPassword"
+                placeholder="••••••••••"
+                className="mb-2 block w-full rounded-lg rounded-l-lg border border-gray-300 bg-gray-50 p-2.5 px-4 py-3 pl-12 text-gray-600 ring-3 ring-transparent focus:border-transparent focus:ring-1 focus:ring-gray-400 focus:outline-hidden sm:text-sm"
               />
             </div>
             <span className="h-6 text-red-500">
-              {form.formState.errors.address3?.message}
+              {form.formState.errors.confirmPassword?.message}
             </span>
           </div>
 
@@ -179,7 +174,7 @@ const AddressModal = ({
               className="bg-accent-color dark:bg-accent-dark-color hover:bg-accent-color/80 dark:hover:bg-accent-dark-color/80 cursor-pointer rounded-lg px-5 py-2.5 text-sm font-medium text-white disabled:bg-gray-500"
               disabled={isPending}
             >
-              {isPending ? "Processing..." : "Add/Edit Address"}
+              {isPending ? "Processing..." : "Change Password"}
             </button>
             <button
               type="button"
@@ -196,4 +191,4 @@ const AddressModal = ({
   );
 };
 
-export default AddressModal;
+export default ChangePasswordModal;
