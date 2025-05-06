@@ -58,6 +58,7 @@ export default function Orders() {
                 <p className="text-md">
                   Total Price: ${orderGroup.totalPrice.toFixed(2)}
                 </p>
+                <p className="text-md">Address: {orderGroup.address}</p>
                 <p className="text-md">Status: {orderGroup.status}</p>
               </div>
 

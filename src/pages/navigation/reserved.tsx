@@ -65,6 +65,7 @@ export default function Reserved() {
                 <h2 className="text-lg font-bold">
                   Reserved ID: {orderGroup.reservedId}
                 </h2>
+                <p className="text-md">Address: {orderGroup.address}</p>
                 <p className="text-md">
                   Total Quantity: {orderGroup.totalQuantity} items
                 </p>

@@ -2,7 +2,8 @@ import { z } from "zod";
 import { v4 as uuidv4 } from "uuid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useGetUserAddresses } from "../hooks/users";
 import { OrderDetail } from "../utils/types";
 import { FaRegWindowClose, FaTrashAlt } from "react-icons/fa";
 import { OrderModal } from "./modals/order";
@@ -18,14 +19,20 @@ type orderSchemaType = z.infer<typeof orderSchema>;
 const orderSchema = z.object({
   quantity: z.string().min(1, { message: "Please enter a quantity." }),
   size: z.string().min(1, { message: "Please enter a size." }),
+  address: z.string().min(1, { message: "Please select an address." }),
 });
 
 export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
+  const userId = JSON.parse(localStorage.getItem("id") || "") as string;
+  const currentAddressRef = useRef<HTMLHeadingElement | null>(null);
   const [total, setTotal] = useState<number>(0);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [isReservedModalOpen, setIsReservedModalOpen] = useState(false);
   const [orders, setOrders] = useState<OrderDetail[]>([]);
   const [isVisible, setIsVisible] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState<string>("");
+  const [isAddressLocked, setIsAddressLocked] = useState<boolean>(false);
+  const { data: userAddresses, isLoading } = useGetUserAddresses(userId);
 
   const priceNumber = parseFloat(order.price);
   const priceSizes = {
@@ -43,16 +50,32 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    if (userAddresses && userAddresses.address.length > 0) {
+      setSelectedAddress(userAddresses.address[0]);
+      form.setValue("address", userAddresses.address[0]);
+    }
+  }, [userAddresses]);
+
   const form = useForm({
     resolver: zodResolver(orderSchema),
     defaultValues: {
       quantity: "",
       size: "",
+      address: "",
     },
   });
 
   const removeOrder = (id: string) => {
-    setOrders((prev) => prev.filter((o) => o.tmpId !== id));
+    setOrders((prev) => {
+      const filtered = prev.filter((o) => o.tmpId !== id);
+
+      if (filtered.length === 0) {
+        setIsAddressLocked(false);
+      }
+      return filtered;
+    });
+
     const orderToRemove = orders.find((o) => o.tmpId === id);
     if (orderToRemove?.subtotal) {
       setTotal((prev) => prev - (orderToRemove.subtotal || 0));
@@ -85,15 +108,32 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
         tmpId: uuidv4(),
         quantity: parseInt(data.quantity),
         size: data.size,
+        address: data.address,
         subtotal: finalPrice * parseInt(data.quantity),
       };
 
       setOrders((prev) => [...prev, enhancedOrder]);
       setTotal((prev) => prev + enhancedOrder.subtotal);
 
-      form.reset();
+      if (!isAddressLocked) {
+        setIsAddressLocked(true);
+      }
+
+      form.reset({
+        quantity: "",
+        size: "",
+        address: selectedAddress,
+      });
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const handleAddressChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const address = e.target.value;
+    setSelectedAddress(address);
+    if (currentAddressRef.current) {
+      currentAddressRef.current.textContent = address;
     }
   };
 
@@ -119,6 +159,7 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
           setCurrentOrder("");
           setOrders([]);
           setTotal(0);
+          setIsAddressLocked(false); // Reset address lock when closing
         }, 300);
       }
     }
@@ -134,12 +175,14 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
         isModalOpen={isReservedModalOpen}
         setIsModalOpen={setIsReservedModalOpen}
         orderDetail={orders}
+        address={selectedAddress}
       />
 
       <OrderModal
         isModalOpen={isOrderModalOpen}
         setIsModalOpen={setIsOrderModalOpen}
         orderDetail={orders}
+        address={selectedAddress}
       />
       <FaRegWindowClose
         className="absolute top-5 right-5 cursor-pointer transition duration-300 ease-in-out hover:scale-105"
@@ -152,7 +195,13 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
         <div className="grid grid-cols-2">
           <div>
             <h2 className="text-lg">Delivery address</h2>
-            <h1 className="text-3xl font-bold">1342 Morris Street</h1>
+            <h1 className="text-2xl font-bold" ref={currentAddressRef}>
+              {isLoading
+                ? "..."
+                : selectedAddress ||
+                  userAddresses?.address[0] ||
+                  "No address available"}
+            </h1>
           </div>
 
           <div className="flex flex-col items-end gap-2">
@@ -218,6 +267,39 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
                 </select>
                 <span className="text-red-500">
                   {form.formState.errors.size?.message}
+                </span>
+              </div>
+              <div className="flex flex-col gap-2">
+                <label htmlFor="address" className="text-md">
+                  Address{" "}
+                  {isAddressLocked && (
+                    <span className="text-xs text-gray-500">(locked)</span>
+                  )}
+                </label>
+                <select
+                  id="address"
+                  className={`bg-primary-color w-full border-2 border-black p-1 dark:text-black ${
+                    isAddressLocked ? "cursor-not-allowed opacity-75" : ""
+                  }`}
+                  {...form.register("address")}
+                  onChange={handleAddressChange}
+                  value={selectedAddress}
+                  disabled={isAddressLocked}
+                >
+                  <option value="">Select Address</option>
+                  {userAddresses?.address?.map((addr, index) => (
+                    <option key={index} value={addr}>
+                      {addr}
+                    </option>
+                  ))}
+                </select>
+                {isAddressLocked && (
+                  <span className="text-xs text-gray-500">
+                    Address cannot be changed after adding your first item
+                  </span>
+                )}
+                <span className="text-red-500">
+                  {form.formState.errors.address?.message}
                 </span>
               </div>
               <button className="bg-accent-color dark:bg-accent-dark-color dark:hover:bg-accent-dark-color/80 hover:bg-accent-color/80 mt-4 cursor-pointer rounded-md p-2 text-white transition duration-300 ease-in-out hover:scale-105">

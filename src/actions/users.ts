@@ -15,6 +15,10 @@ export const getUser = async (id: string) => {
   return await axiosClient.get(`/users/${id}`);
 };
 
+export const getUserAddresses = async (id: string) => {
+  return await axiosClient.get(`/users/addresses/${id}`);
+};
+
 export const updateUserAddress = async (id: string, data: string[]) => {
   return await axiosClient.put(`/users/${id}`, data);
 };

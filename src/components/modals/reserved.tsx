@@ -12,13 +12,18 @@ type ReserveModal = {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
+type ReservedData = {
+  orderDetail: OrderDetail[];
+  address: string;
+};
+
 export function ReserveModal({
   isModalOpen,
   setIsModalOpen,
   orderDetail,
-}: ReserveModal & {
-  orderDetail: OrderDetail[];
-}) {
+  address,
+}: ReserveModal & ReservedData) {
+  const name = JSON.parse(localStorage.getItem("name") || "");
   const [modalScale, setModalScale] = useState(false);
   const [internalOpen, setInternalOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -36,6 +41,7 @@ export function ReserveModal({
         size: order.size,
         quantity: order.quantity.toString() as string,
         price: order.subtotal.toFixed(2).toString() as string,
+        address: order.address,
       };
       startTransition(async () => {
         await useAddToReserved(data);
@@ -90,6 +96,8 @@ export function ReserveModal({
               }}
             />
           </div>
+          <h1 className="text-lg font-semibold">Name: {name}</h1>
+          <p>Address: {address}</p>
           <div className="flex flex-col gap-2 md:grid md:grid-cols-2">
             {orderDetail.map((item) => (
               <div

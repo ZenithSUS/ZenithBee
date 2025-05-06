@@ -1,5 +1,5 @@
-import { getUser, updateUserAddress } from "../actions/users";
-import { ShowUser } from "../utils/types";
+import { getUser, updateUserAddress, getUserAddresses } from "../actions/users";
+import { ShowAddresses, ShowUser } from "../utils/types";
 import { useQuery, QueryObserverResult } from "@tanstack/react-query";
 
 export const useGetUserById = (
@@ -8,6 +8,18 @@ export const useGetUserById = (
   return useQuery<ShowUser>({
     queryFn: async () => {
       const { data } = await getUser(userId);
+      return data;
+    },
+    queryKey: ["user"],
+  });
+};
+
+export const useGetUserAddresses = (
+  userId: string,
+): QueryObserverResult<ShowAddresses> => {
+  return useQuery<ShowAddresses>({
+    queryFn: async () => {
+      const { data } = await getUserAddresses(userId);
       return data;
     },
     queryKey: ["user"],

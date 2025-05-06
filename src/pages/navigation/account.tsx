@@ -25,6 +25,7 @@ export default function Account() {
         isModalOpen={activeModal === "address"}
         setIsModalOpen={() => closeModal()}
         userId={userId}
+        addresses={userInfo?.address || []}
       />
       <h1 className="text-2xl font-bold">Account</h1>
 
@@ -42,13 +43,25 @@ export default function Account() {
                 <span className="font-bold">{userInfo?.fullname}</span>{" "}
               </h1>
 
-              <div className="text-md grid grid-cols-1 gap-2 md:grid-cols-2">
-                <p>Email: {userInfo?.email}</p>
-                <p>
-                  Addresses:{" "}
-                  {userInfo?.address.length === 0 ? "No Address Yet" : ""}
-                </p>
-                <p>Registered At: {formatDate(userInfo?.$createdAt || "")}</p>
+              <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+                <div className="text-md flex flex-col gap-2">
+                  <p>Email: {userInfo?.email}</p>
+                  <p>Registered At: {formatDate(userInfo?.$createdAt || "")}</p>
+                </div>
+                <div className="flex flex-col">
+                  <p>Addresses</p>
+
+                  {userInfo?.address.length === 0 ? (
+                    "No Address Yet"
+                  ) : (
+                    <ul>
+                      {" "}
+                      {userInfo?.address.map((add, index) => (
+                        <li key={index}>- {add}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -58,7 +71,7 @@ export default function Account() {
               className="bg-accent-color dark:bg-accent-dark-color hover:bg-accent-color/80 dark:hover:bg-accent-dark-color/80 cursor-pointer rounded-md p-2 text-white transition duration-300 ease-in-out hover:scale-105"
               onClick={() => openModal("address")}
             >
-              Add Address
+              Add/Edit Address
             </button>
             <button className="bg-accent-color dark:bg-accent-dark-color hover:bg-accent-color/80 dark:hover:bg-accent-dark-color/80 cursor-pointer rounded-md p-2 text-white transition duration-300 ease-in-out hover:scale-105">
               Change Password

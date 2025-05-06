@@ -13,6 +13,7 @@ type AddressModalProps = {
   isModalOpen: boolean;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   userId: string;
+  addresses: string[];
 };
 
 type AddressFormSchemaType = z.infer<typeof AddressFormSchema>;
@@ -27,6 +28,7 @@ const AddressModal = ({
   isModalOpen,
   setIsModalOpen,
   userId,
+  addresses,
 }: AddressModalProps) => {
   const queryClient = useQueryClient();
   const [isPending, startTransition] = useTransition();
@@ -36,9 +38,9 @@ const AddressModal = ({
   const form = useForm<AddressFormSchemaType>({
     resolver: zodResolver(AddressFormSchema),
     defaultValues: {
-      address1: "",
-      address2: "",
-      address3: "",
+      address1: addresses[0],
+      address2: addresses[1],
+      address3: addresses[2],
     },
   });
 
@@ -57,17 +59,22 @@ const AddressModal = ({
   }, [isModalOpen]);
 
   const submitAddresses = (data: AddressFormSchemaType) => {
-    const addresses = [data.address1, data.address2, data.address3];
-
-    startTransition(async () => {
-      await useUpdateUserAddress(
-        userId,
-        addresses.filter((address): address is string => address !== undefined),
+    try {
+      if (Object.keys(form.formState.errors).length > 0) return;
+      const addresses = [data.address1, data.address2, data.address3];
+      const addressesFinal = addresses.filter(
+        (address): address is string => address !== undefined && address !== "",
       );
-      await queryClient.invalidateQueries({ queryKey: ["user"] });
-    });
 
-    toast.success("Updated Successfully!");
+      startTransition(async () => {
+        await useUpdateUserAddress(userId, addressesFinal);
+        await queryClient.invalidateQueries({ queryKey: ["user"] });
+      });
+      setIsModalOpen(false);
+      toast.success("Updated Successfully!");
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -86,7 +93,7 @@ const AddressModal = ({
           modalScale ? "scale-100 opacity-100" : "scale-75 opacity-0"
         }`}
       >
-        <div className="flex items-start justify-between p-4">
+        <div className="mb-2 flex items-start justify-between">
           <h3 className="text-xl font-semibold">Add address</h3>
           <button
             type="button"
@@ -104,7 +111,7 @@ const AddressModal = ({
           <div>
             <label
               htmlFor="address1"
-              className="mb-2 block text-base font-medium text-[#111827]"
+              className="mb-2 block text-base font-medium"
             >
               Address 1
             </label>
@@ -125,7 +132,7 @@ const AddressModal = ({
           <div>
             <label
               htmlFor="address2"
-              className="mb-2 block text-base font-medium text-[#111827]"
+              className="mb-2 block text-base font-medium"
             >
               Address 2 {"(Optional)"}
             </label>
@@ -147,7 +154,7 @@ const AddressModal = ({
           <div>
             <label
               htmlFor="address3"
-              className="mb-2 block text-base font-medium text-[#111827]"
+              className="mb-2 block text-base font-medium"
             >
               Address 3 {"(Optional)"}
             </label>
@@ -155,7 +162,7 @@ const AddressModal = ({
               {UserSvg()}
               <input
                 type="text"
-                {...form.register("address1")}
+                {...form.register("address3")}
                 id="address3"
                 className="mb-2 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 px-4 py-3 pl-12 text-gray-600 ring-3 ring-transparent focus:border-transparent focus:ring-1 focus:ring-gray-400 focus:outline-hidden sm:text-sm"
                 placeholder="Address 3"
@@ -166,14 +173,16 @@ const AddressModal = ({
             </span>
           </div>
 
-          <div className="flex w-full gap-2">
+          <div className="mt-4 flex w-full gap-2">
             <button
+              type="submit"
               className="cursor-pointer rounded-lg bg-red-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-700 disabled:bg-gray-500"
               disabled={isPending}
             >
               {isPending ? "Adding..." : "Add Address"}
             </button>
             <button
+              type="button"
               onClick={() => setIsModalOpen(false)}
               className="cursor-pointer rounded-lg bg-gray-200 px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-300 disabled:bg-gray-500"
               disabled={isPending}

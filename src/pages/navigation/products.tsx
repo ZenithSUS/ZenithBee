@@ -76,6 +76,7 @@ export default function Products() {
           order={{
             ...orderDetail,
             tmpId: "temp-id",
+            address: "",
             size: "",
             quantity: 1,
             subtotal: 0,

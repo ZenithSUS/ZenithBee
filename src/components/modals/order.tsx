@@ -12,13 +12,18 @@ type OrderModal = {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
+type OrderData = {
+  orderDetail: OrderDetail[];
+  address: string;
+};
+
 export function OrderModal({
   isModalOpen,
   setIsModalOpen,
   orderDetail,
-}: OrderModal & {
-  orderDetail: OrderDetail[];
-}) {
+  address,
+}: OrderModal & OrderData) {
+  const name = JSON.parse(localStorage.getItem("name") || "");
   const [modalScale, setModalScale] = useState(false);
   const [internalOpen, setInternalOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -36,6 +41,7 @@ export function OrderModal({
         size: order.size,
         quantity: order.quantity.toString() as string,
         price: order.subtotal.toFixed(2).toString() as string,
+        address: order.address,
       };
       startTransition(async () => {
         await useCreateOrder(data);
@@ -88,6 +94,9 @@ export function OrderModal({
               }}
             />
           </div>
+
+          <h1 className="text-lg font-semibold">Name: {name}</h1>
+          <p>Address: {address}</p>
           <div className="flex flex-col gap-2 md:grid md:grid-cols-2">
             {orderDetail.map((item) => (
               <div

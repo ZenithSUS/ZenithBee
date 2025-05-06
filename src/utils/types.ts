@@ -30,6 +30,11 @@ export type ShowUser = Partial<Users> & {
   address: string[];
 };
 
+export type ShowAddresses = {
+  email: string;
+  address: string[];
+};
+
 export type Products = {
   $id: string;
   $createdAt: string;
@@ -59,6 +64,7 @@ export type OrderDetail = ShowProducts & {
   subtotal: number;
   user: string;
   product: ShowProducts;
+  address: string;
 };
 
 export type Favorite = {
@@ -84,6 +90,7 @@ export type Order = {
   quantity: number | string;
   size: string;
   price: number | string;
+  address: string;
 };
 
 export type ShowOrder = Order & {
@@ -108,6 +115,7 @@ export type Reserved = {
   quantity: number | string;
   size: string;
   price: number | string;
+  address: string;
 };
 
 export type AddReserved = Omit<
