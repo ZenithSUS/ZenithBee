@@ -77,21 +77,25 @@ export default function Reserved() {
 
   return (
     <div className="mt-3 flex flex-col gap-5">
-      <DeleteModal
-        isModalOpen={isDeleteModalOpen}
-        setIsModalOpen={setIsDeleteModalOpen}
-        reserveId={reserveId}
-        setReserveId={setReserveId}
-      />
+      {isDeleteModalOpen && (
+        <DeleteModal
+          isModalOpen={isDeleteModalOpen}
+          setIsModalOpen={setIsDeleteModalOpen}
+          reserveId={reserveId}
+          setReserveId={setReserveId}
+        />
+      )}
 
-      <ReservedToOrderModal
-        isModalOpen={isResToOrdModalOpen}
-        setIsModalOpen={setIsResToOrdModalOpen}
-        reservedId={reserveId}
-        address={address}
-        setReserveId={setReserveId}
-        orderDetail={orderDetail}
-      />
+      {isResToOrdModalOpen && (
+        <ReservedToOrderModal
+          isModalOpen={isResToOrdModalOpen}
+          setIsModalOpen={setIsResToOrdModalOpen}
+          reservedId={reserveId}
+          address={address}
+          setReserveId={setReserveId}
+          orderDetail={orderDetail}
+        />
+      )}
 
       <h1 className="text-2xl font-bold">Reserved Orders</h1>
 
@@ -105,7 +109,7 @@ export default function Reserved() {
             key={orderGroup.reservedId}
             className="bg-primary-color dark:bg-primary-dark-color rounded-md border p-4"
           >
-            <div className="flex cursor-pointer items-center justify-between">
+            <div className="flex flex-col items-center gap-5 md:flex-row md:justify-between">
               <div>
                 <h2 className="text-lg font-bold">
                   Reserved ID: {orderGroup.reservedId}

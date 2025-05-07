@@ -28,7 +28,6 @@ export function ReserveModal({
   const [internalOpen, setInternalOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const queryClient = useQueryClient();
-
   const navigate = useNavigate();
 
   const handleReserve = () => {
@@ -131,7 +130,7 @@ export function ReserveModal({
             </p>
           </div>
           <button
-            className="bg-accent-color hover:bg-accent-hover dark:hover:bg-accent-hover/50 dark:bg-accent-dark-color mt-3 cursor-pointer p-2 transition duration-300 ease-in-out disabled:bg-gray-500"
+            className="bg-accent-color hover:bg-accent-hover dark:hover:bg-accent-hover/50 dark:bg-accent-dark-color mt-3 cursor-pointer p-2 text-white transition duration-300 ease-in-out disabled:bg-gray-500"
             onClick={handleReserve}
             disabled={isPending}
           >
