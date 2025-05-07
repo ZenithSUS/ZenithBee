@@ -3,12 +3,13 @@ import { useState } from "react";
 import { useGetUserById } from "../../hooks/users";
 import AddressModal from "../../components/modals/address";
 import ChangePasswordModal from "../../components/modals/change-password";
+import ChangeImageModal from "../../components/modals/change-image";
 import formatDate from "../../utils/functions/format-date";
 
 export default function Account() {
   const userId = JSON.parse(localStorage.getItem("id") || "") as string;
   const { data: userInfo, isLoading } = useGetUserById(userId);
-  const [activeModal, setActiveModal] = useState<string | null>();
+  const [activeModal, setActiveModal] = useState<string | null>(null);
 
   if (isLoading) return <Loading />;
 
@@ -24,14 +25,21 @@ export default function Account() {
     <div className="mt-3 flex flex-col gap-5">
       <AddressModal
         isModalOpen={activeModal === "address"}
-        setIsModalOpen={() => closeModal()}
+        setIsModalOpen={closeModal}
         userId={userId}
         addresses={userInfo?.address || []}
       />
+
       <ChangePasswordModal
         isModalOpen={activeModal === "changePassword"}
-        setIsModalOpen={() => closeModal()}
+        setIsModalOpen={closeModal}
       />
+
+      <ChangeImageModal
+        isModalOpen={activeModal === "changeImage"}
+        setIsModalOpen={closeModal}
+      />
+
       <h1 className="text-2xl font-bold">Account</h1>
 
       <div className="bg-primary-color dark:bg-primary-dark-color">
@@ -39,7 +47,8 @@ export default function Account() {
           <div className="flex w-full flex-col gap-5 md:flex-row">
             <img
               src={userInfo?.profileImage}
-              className="max-w-sm rounded-lg shadow-2xl"
+              className="h-64 w-64 rounded-lg object-cover shadow-2xl"
+              alt="Profile"
             />
 
             <div className="flex w-full flex-col gap-2">
@@ -56,12 +65,11 @@ export default function Account() {
                 <div className="flex flex-col">
                   <p>Addresses</p>
 
-                  {userInfo?.address.length === 0 ? (
+                  {!userInfo?.address || userInfo.address.length === 0 ? (
                     "No Address Yet"
                   ) : (
                     <ul>
-                      {" "}
-                      {userInfo?.address.map((add, index) => (
+                      {userInfo.address.map((add, index) => (
                         <li key={index}>- {add}</li>
                       ))}
                     </ul>
@@ -84,7 +92,10 @@ export default function Account() {
             >
               Change Password
             </button>
-            <button className="bg-accent-color dark:bg-accent-dark-color hover:bg-accent-color/80 dark:hover:bg-accent-dark-color/80 cursor-pointer rounded-md p-2 text-white transition duration-300 ease-in-out hover:scale-105">
+            <button
+              className="bg-accent-color dark:bg-accent-dark-color hover:bg-accent-color/80 dark:hover:bg-accent-dark-color/80 cursor-pointer rounded-md p-2 text-white transition duration-300 ease-in-out hover:scale-105"
+              onClick={() => openModal("changeImage")}
+            >
               Change Image
             </button>
           </div>

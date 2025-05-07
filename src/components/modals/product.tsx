@@ -7,13 +7,14 @@ Modal.setAppElement("#root");
 type ProductModal = {
   isModalOpen: boolean;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  product: ShowProducts;
 };
 
 export function ProductModal({
   isModalOpen,
   setIsModalOpen,
   product,
-}: ProductModal & { product: ShowProducts }) {
+}: ProductModal) {
   const [modalScale, setModalScale] = useState(false);
   const [internalOpen, setInternalOpen] = useState(false);
 

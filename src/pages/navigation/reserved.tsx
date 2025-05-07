@@ -1,15 +1,20 @@
 import { useState, useEffect } from "react";
 import { getReservedByUser } from "../../hooks/reserved";
-import { ShowReserved } from "../../utils/types";
+import { ReservedOrderDetail, ShowReserved, Products } from "../../utils/types";
 import { TrashIcon } from "lucide-react";
+import { Bell } from "lucide-react";
+import ReservedToOrderModal from "../../components/modals/reserved-to-order";
 import DeleteModal from "../../components/modals/delete-reserved";
 import Loading from "../../components/loading";
 
 export default function Reserved() {
   const userId = JSON.parse(localStorage.getItem("id") as string);
   const { data: reserved, isLoading } = getReservedByUser(userId);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isResToOrdModalOpen, setIsResToOrdModalOpen] = useState(false);
   const [reserveId, setReserveId] = useState("");
+  const [orderDetail, setOrderDetail] = useState<ReservedOrderDetail[]>([]);
+  const [address, setAddress] = useState("");
 
   const [uniqueOrders, setUniqueOrders] = useState<ShowReserved[]>([]);
 
@@ -25,7 +30,37 @@ export default function Reserved() {
 
   const handleRemoveFromReserved = async (reserveId: string) => {
     setReserveId(reserveId);
-    setIsModalOpen(true);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleReservedToOrder = async (reserveId: string, address: string) => {
+    setReserveId(reserveId);
+    setAddress(address);
+
+    // Find the specific order with the matching reservedId
+    const selectedOrder = uniqueOrders.find(
+      (order) => order.reservedId === reserveId,
+    );
+
+    if (selectedOrder) {
+      const formattedOrder: ReservedOrderDetail = {
+        reservedId: selectedOrder.reservedId,
+        address: selectedOrder.address,
+        items: Array.isArray(selectedOrder.items)
+          ? selectedOrder.items.map((item) => ({
+              size: item.size,
+              quantity: item.quantity,
+              price: Number(item.price),
+              user: item.user,
+              image: item.product.image,
+              product: item.product as Products,
+            }))
+          : [],
+        totalPrice: selectedOrder.totalPrice.toFixed(2),
+      };
+      setOrderDetail([formattedOrder]);
+      setIsResToOrdModalOpen(true);
+    }
   };
 
   const toggleOrderDetails = (orderId: string) => {
@@ -43,11 +78,21 @@ export default function Reserved() {
   return (
     <div className="mt-3 flex flex-col gap-5">
       <DeleteModal
-        isModalOpen={isModalOpen}
-        setIsModalOpen={setIsModalOpen}
+        isModalOpen={isDeleteModalOpen}
+        setIsModalOpen={setIsDeleteModalOpen}
         reserveId={reserveId}
         setReserveId={setReserveId}
       />
+
+      <ReservedToOrderModal
+        isModalOpen={isResToOrdModalOpen}
+        setIsModalOpen={setIsResToOrdModalOpen}
+        reservedId={reserveId}
+        address={address}
+        setReserveId={setReserveId}
+        orderDetail={orderDetail}
+      />
+
       <h1 className="text-2xl font-bold">Reserved Orders</h1>
 
       {uniqueOrders.length === 0 && (
@@ -82,6 +127,18 @@ export default function Reserved() {
                 >
                   {orderGroup.isOpen ? "▼" : "►"}
                 </div>
+                <button type="button" className="text-xl">
+                  <Bell
+                    className="h-6 w-6 cursor-pointer"
+                    onClick={() =>
+                      handleReservedToOrder(
+                        orderGroup.reservedId,
+                        orderGroup.address,
+                      )
+                    }
+                    color="green"
+                  />
+                </button>
                 <button type="button" className="text-xl">
                   <TrashIcon
                     className="h-6 w-6 cursor-pointer"

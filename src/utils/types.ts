@@ -130,3 +130,19 @@ export type ShowReserved = Reserved & {
   items: ShowProducts;
   isOpen: boolean;
 };
+
+export type ReservedOrderDetail = {
+  reservedId: string;
+  address: string;
+  items: ReservedItems[];
+  totalPrice: string;
+};
+
+export type ReservedItems = {
+  size: string;
+  quantity: number;
+  price: number;
+  user: string;
+  image: string;
+  product: Products;
+};

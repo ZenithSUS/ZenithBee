@@ -7,14 +7,14 @@ import { v4 as uuidv4 } from "uuid";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 
-type OrderModal = {
-  isModalOpen: boolean;
-  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
 type OrderData = {
   orderDetail: OrderDetail[];
   address: string;
+};
+
+type OrderModal = OrderData & {
+  isModalOpen: boolean;
+  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export function OrderModal({
@@ -22,7 +22,7 @@ export function OrderModal({
   setIsModalOpen,
   orderDetail,
   address,
-}: OrderModal & OrderData) {
+}: OrderModal) {
   const name = JSON.parse(localStorage.getItem("name") || "");
   const [modalScale, setModalScale] = useState(false);
   const [internalOpen, setInternalOpen] = useState(false);
@@ -46,6 +46,7 @@ export function OrderModal({
       startTransition(async () => {
         await useCreateOrder(data);
         queryClient.invalidateQueries({ queryKey: ["order"] });
+        queryClient.invalidateQueries({ queryKey: ["user"] });
       });
     });
     if (!isPending) {
@@ -130,7 +131,7 @@ export function OrderModal({
             </p>
           </div>
           <button
-            className="bg-accent-color hover:bg-accent-hover dark:hover:bg-accent-hover/50 dark:bg-accent-dark-color mt-3 cursor-pointer p-2 transition duration-300 ease-in-out disabled:bg-gray-500"
+            className="bg-accent-color hover:bg-accent-hover dark:hover:bg-accent-hover/50 dark:bg-accent-dark-color mt-3 cursor-pointer p-2 text-white transition duration-300 ease-in-out disabled:bg-gray-500"
             onClick={handleOrder}
             disabled={isPending}
           >
