@@ -37,7 +37,6 @@ export default function Reserved() {
     setReserveId(reserveId);
     setAddress(address);
 
-    // Find the specific order with the matching reservedId
     const selectedOrder = uniqueOrders.find(
       (order) => order.reservedId === reserveId,
     );
@@ -125,7 +124,7 @@ export default function Reserved() {
 
               <div className="flex items-center gap-5">
                 <div
-                  className="text-3xl"
+                  className="cursor-pointer text-3xl"
                   onClick={() => toggleOrderDetails(orderGroup.reservedId)}
                   role="button"
                 >
