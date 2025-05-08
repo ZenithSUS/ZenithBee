@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useGetProducts } from "../../hooks/products";
 import { ShowProducts } from "../../utils/types";
 import HeroImg from "../../assets/ui/hero.png";
-import SearchBar from "../../components/searchbar";
+import ZenitBeeAI from "../../components/zenithbee-ai";
 import ProductCard from "../../components/product-card";
 import OrderDetails from "../../components/order-details";
 import Loading from "../../components/loading";
@@ -29,17 +29,25 @@ export default function Products() {
       className={`grid w-full ${orderDetail ? "grid-cols-[65%_35%]" : "grid-cols-1"} mt-3 gap-6`}
     >
       <div className="flex min-h-screen flex-col gap-3">
-        <SearchBar />
+        <ZenitBeeAI />
 
         {/*Hero Element*/}
         <div className="relative h-fit w-full overflow-hidden rounded-xl">
           <div className="absolute inset-0 z-10 flex items-center">
             <div className="bg-accent-color dark:bg-accent-dark-color clip-path-polygon flex h-full w-[50%] flex-col items-center justify-center gap-1 p-5">
-              <h1 className="font-sans text-3xl font-bold">30% Off</h1>
-              <p className="text-2xl font-bold text-white">Budget Meal</p>
+              <h1 className="font-sans text-2xl font-bold md:text-3xl">
+                30% Off
+              </h1>
+              <p className="text-xl font-bold text-white md:text-2xl">
+                Budget Meal
+              </p>
             </div>
           </div>
-          <img src={HeroImg} alt="hero" className="h-60 w-full object-cover" />
+          <img
+            src={HeroImg}
+            alt="hero"
+            className="h-40 w-full object-cover md:h-60"
+          />
         </div>
 
         {/* Product Filter

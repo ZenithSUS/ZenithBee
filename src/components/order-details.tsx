@@ -148,28 +148,25 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
   const handleClose = () => {
     if (orders.length === 0) {
       setIsVisible(false);
-      setTimeout(() => setCurrentOrder(""), 300);
+      setCurrentOrder("");
     } else {
       const confirmClose = window.confirm(
         "You have pending orders. Are you sure you want to close?",
       );
       if (confirmClose) {
         setIsVisible(false);
-        setTimeout(() => {
-          setCurrentOrder("");
-          setOrders([]);
-          setTotal(0);
-          setIsAddressLocked(false); // Reset address lock when closing
-        }, 300);
+
+        setCurrentOrder("");
+        setOrders([]);
+        setTotal(0);
+        setIsAddressLocked(false); // Reset address lock when closing
       }
     }
   };
 
   return (
     <div
-      className={`bg-primary-color dark:bg-primary-dark-color fixed top-0 right-0 bottom-0 z-50 flex w-[30%] flex-col gap-2.5 overflow-auto p-5 text-black shadow-lg transition-transform duration-300 ease-in-out dark:text-white ${
-        isVisible ? "translate-x-0" : "translate-x-full"
-      }`}
+      className={`bg-primary-color dark:bg-primary-dark-color fixed top-0 right-0 bottom-0 z-50 flex flex-col gap-2.5 overflow-auto p-5 text-black shadow-lg transition-transform duration-300 ease-in-out dark:text-white ${isVisible ? "translate-x-0" : "translate-x-full"} w-full md:w-[50%] lg:w-[40%] xl:w-[30%]`}
     >
       <ReserveModal
         isModalOpen={isReservedModalOpen}
@@ -190,12 +187,16 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
         size={30}
         onClick={handleClose}
       />
-      <h1 className="text-3xl font-bold">My Order</h1>
+      <h1 className="text-2xl font-bold md:text-3xl">My Order</h1>
+
       <div className="flex flex-col">
-        <div className="grid grid-cols-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           <div>
-            <h2 className="text-lg">Delivery address</h2>
-            <h1 className="text-2xl font-bold" ref={currentAddressRef}>
+            <h2 className="text-base md:text-lg">Delivery address</h2>
+            <h1
+              className="max-w-full truncate text-xl font-bold md:text-2xl"
+              ref={currentAddressRef}
+            >
               {isLoading
                 ? "..."
                 : selectedAddress ||
@@ -204,39 +205,41 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
             </h1>
           </div>
 
-          <div className="flex flex-col items-end gap-2">
-            <h2 className="text-lg">Size Prices</h2>
-            <div className="grid grid-cols-2 gap-1">
-              <span className="text-sm">S: ${priceSizes.small}</span>
-              <span className="text-sm">M: ${priceSizes.medium}</span>
-              <span className="text-sm">L: ${priceSizes.large}</span>
-              <span className="text-sm">XL: ${priceSizes["extra-large"]}</span>
+          <div className="mt-2 flex flex-col gap-1 sm:mt-0 sm:items-end">
+            <h2 className="text-base md:text-lg">Size Prices</h2>
+            <div className="grid grid-cols-2 gap-1 text-xs md:text-sm">
+              <span>S: ${priceSizes.small}</span>
+              <span>M: ${priceSizes.medium}</span>
+              <span>L: ${priceSizes.large}</span>
+              <span>XL: ${priceSizes["extra-large"]}</span>
             </div>
           </div>
         </div>
 
-        <div className="mt-4 grid grid-cols-2 gap-4">
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="grid grid-cols-1 gap-1.5 self-start">
             <img
               src={order.image}
               alt={order.name}
-              className="h-52 w-52 rounded-2xl object-cover"
+              className="mx-auto h-40 w-40 rounded-2xl object-cover sm:mx-0 sm:h-52 sm:w-52"
             />
-            <p className="break-all">{order.description}</p>
+            <p className="text-sm break-all md:text-base">
+              {order.description}
+            </p>
           </div>
 
           <div className="flex flex-col gap-3">
             <div className="flex justify-between">
-              <h1 className="text-lg font-bold">{order.name}</h1>
-              <p className="text-lg font-bold">${order.price}</p>
+              <h1 className="text-base font-bold md:text-lg">{order.name}</h1>
+              <p className="text-base font-bold md:text-lg">${order.price}</p>
             </div>
 
             <form
               onSubmit={form.handleSubmit(addOrder)}
               className="flex flex-col gap-2"
             >
-              <div className="flex flex-col gap-2">
-                <label htmlFor="quantity" className="text-md">
+              <div className="flex flex-col gap-1">
+                <label htmlFor="quantity" className="md:text-md text-sm">
                   Quantity
                 </label>
                 <input
@@ -246,12 +249,12 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
                   {...form.register("quantity")}
                   className="bg-primary-color w-full border-2 border-black p-1 dark:text-black"
                 />
-                <span className="text-red-500">
+                <span className="text-xs text-red-500">
                   {form.formState.errors.quantity?.message}
                 </span>
               </div>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="size" className="text-md">
+              <div className="flex flex-col gap-1">
+                <label htmlFor="size" className="md:text-md text-sm">
                   Size
                 </label>
                 <select
@@ -265,12 +268,12 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
                   <option value="large">Large</option>
                   <option value="extra-large">Extra Large</option>
                 </select>
-                <span className="text-red-500">
+                <span className="text-xs text-red-500">
                   {form.formState.errors.size?.message}
                 </span>
               </div>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="address" className="text-md">
+              <div className="flex flex-col gap-1">
+                <label htmlFor="address" className="md:text-md text-sm">
                   Address{" "}
                   {isAddressLocked && (
                     <span className="text-xs text-gray-500">(locked)</span>
@@ -298,11 +301,11 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
                     Address cannot be changed after adding your first item
                   </span>
                 )}
-                <span className="text-red-500">
+                <span className="text-xs text-red-500">
                   {form.formState.errors.address?.message}
                 </span>
               </div>
-              <button className="bg-accent-color dark:bg-accent-dark-color dark:hover:bg-accent-dark-color/80 hover:bg-accent-color/80 mt-4 cursor-pointer rounded-md p-2 text-white transition duration-300 ease-in-out hover:scale-105">
+              <button className="bg-accent-color dark:bg-accent-dark-color dark:hover:bg-accent-dark-color/80 hover:bg-accent-color/80 mt-2 cursor-pointer rounded-md p-2 text-white transition duration-300 ease-in-out hover:scale-105 md:mt-4">
                 Add
               </button>
             </form>
@@ -313,7 +316,7 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
       {/* Display orders list */}
       {orders.length > 0 && (
         <div className="mt-4">
-          <h2 className="mb-2 text-xl font-bold">Order Items</h2>
+          <h2 className="mb-2 text-lg font-bold md:text-xl">Order Items</h2>
           <div className="flex flex-col gap-2">
             {orders.map((item, index) => (
               <div
@@ -321,17 +324,17 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
                 className="flex items-center justify-between border-b pb-2"
               >
                 <div>
-                  <p className="font-bold">{item.name}</p>
-                  <p>
+                  <p className="text-sm font-bold md:text-base">{item.name}</p>
+                  <p className="text-xs md:text-sm">
                     Size: {item.size} | Qty: {item.quantity}
                   </p>
                 </div>
-                <p className="font-bold">
+                <p className="text-sm font-bold md:text-base">
                   ${item.subtotal?.toFixed(2)}{" "}
                   <button onClick={() => removeOrder(item.tmpId || "")}>
                     <FaTrashAlt
                       color="red"
-                      size={20}
+                      size={18}
                       className="ml-2 cursor-pointer"
                     />
                   </button>
@@ -342,21 +345,21 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
         </div>
       )}
 
-      <div className="mt-auto flex items-center justify-between text-lg">
+      <div className="mt-auto flex items-center justify-between text-base md:text-lg">
         <h2 className="text-gray-500">Total</h2>
         <p>$ {total.toFixed(2)}</p>
       </div>
 
       <div className="grid grid-cols-2 gap-2">
         <button
-          className="bg-accent-color hover:bg-accent-color/80 mt-4 cursor-pointer rounded-md p-2 text-white transition duration-300 ease-in-out hover:scale-105 disabled:cursor-not-allowed disabled:bg-gray-500"
+          className="bg-accent-color hover:bg-accent-color/80 mt-2 cursor-pointer rounded-md p-2 text-sm text-white transition duration-300 ease-in-out hover:scale-105 disabled:cursor-not-allowed disabled:bg-gray-500 md:mt-4 md:text-base"
           disabled={orders.length === 0}
           onClick={handleOrder}
         >
           Submit Order
         </button>
         <button
-          className="bg-accent-color hover:bg-accent-color/80 mt-4 cursor-pointer rounded-md p-2 text-white transition duration-300 ease-in-out hover:scale-105 disabled:cursor-not-allowed disabled:bg-gray-500"
+          className="bg-accent-color hover:bg-accent-color/80 mt-2 cursor-pointer rounded-md p-2 text-sm text-white transition duration-300 ease-in-out hover:scale-105 disabled:cursor-not-allowed disabled:bg-gray-500 md:mt-4 md:text-base"
           onClick={handleReserve}
           disabled={orders.length === 0}
         >
