@@ -1,30 +1,70 @@
-import { useState } from "react";
-import { Power, Send, X } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Power, Send, X, Minimize } from "lucide-react";
 import { FaRobot } from "react-icons/fa";
+import { zenithAI } from "../actions/zenith-ai";
+import { Messages } from "../utils/types";
+import ProductCardChat from "./product-card-chat";
+import LoadingDots from "./loading-ai";
 
 export default function ZenithBeeChatBot() {
   const [isPowerOn, setIsPowerOn] = useState(false);
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState([
-    { role: "system", content: "How can I assist you today?" },
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [messages, setMessages] = useState<Messages[]>([
+    {
+      role: "assistant",
+      content: "How can I assist you today?",
+      product: null,
+    },
   ]);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
-  const handleSend = () => {
+  useEffect(() => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  const handleSend = async () => {
     if (input.trim()) {
-      setMessages([...messages, { role: "user", content: input }]);
+      setMessages((prev) => [
+        ...prev,
+        { role: "user", content: input, product: [] },
+      ]);
 
-      // Simulate AI response
-      setTimeout(() => {
+      setIsLoading(true);
+      setInput("");
+
+      try {
+        const response = await zenithAI({ input });
+        console.log(response);
+
+        setTimeout(() => {
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: "assistant",
+              content: response.message,
+              product: response.product,
+            },
+          ]);
+          setIsLoading(false);
+        }, 500);
+      } catch (error) {
+        console.error("Error getting response:", error);
+
         setMessages((prev) => [
           ...prev,
           {
-            role: "system",
-            content: `Your query was: "${input}"`,
+            role: "assistant",
+            content: "Sorry, I encountered an error. Please try again.",
+            product: null,
           },
         ]);
-      }, 500);
-
-      setInput("");
+        setIsLoading(false);
+      }
     }
   };
 
@@ -40,9 +80,11 @@ export default function ZenithBeeChatBot() {
   };
 
   return (
-    <div className="sticky top-0 z-[20] w-full">
+    <div
+      className={`${isPowerOn ? "fixed inset-0 z-50 flex flex-col" : "sticky top-0 z-20 w-full"}`}
+    >
       {/* Header */}
-      <div className="bg-primary-color dark:bg-primary-dark-color flex w-full items-center justify-between gap-1 rounded-md p-5 shadow-md shadow-black/20">
+      <div className="bg-primary-color dark:bg-primary-dark-color flex w-full items-center justify-between gap-1 rounded-t-md p-5 shadow-md shadow-black/20">
         <div className="flex w-full items-center gap-4">
           <FaRobot size={30} />
           <h1 className="text-lg font-bold">ZenithBee AI</h1>
@@ -54,37 +96,62 @@ export default function ZenithBeeChatBot() {
             className={`cursor-pointer rounded-full p-2 ${isPowerOn ? "bg-green-500" : "bg-gray-400"} transition-colors hover:opacity-80`}
             onClick={togglePower}
           >
-            <Power size={20} className="text-white" />
+            {isPowerOn ? (
+              <Minimize size={20} className="text-white" />
+            ) : (
+              <Power size={20} className="text-white" />
+            )}
           </button>
         </div>
       </div>
 
-      {/* Chat Interface - Shows when power is on */}
       {isPowerOn && (
-        <div className="bg-secondary-color dark:bg-secondary-dark-color z-20 w-full overflow-hidden rounded-md shadow-lg">
+        <div className="bg-secondary-color dark:bg-secondary-dark-color flex flex-1 flex-col overflow-hidden rounded-b-md shadow-lg">
           {/* Chat Messages */}
-          <div className="bg-secondary-color dark:bg-primary-dark-color/55 h-64 overflow-y-auto p-4">
+          <div
+            ref={messagesContainerRef}
+            className="bg-secondary-color dark:bg-primary-dark-color/55 flex-1 overflow-y-auto p-4"
+          >
             <div className="space-y-4">
               {messages.map((message, index) => (
                 <div
                   key={index}
                   className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
                 >
-                  <div
-                    className={`max-w-3/4 rounded-lg px-4 py-2 ${
-                      message.role === "user"
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-200 text-gray-800"
-                    }`}
-                  >
-                    {message.content}
+                  <div className="max-w-3/4">
+                    <div
+                      className={`rounded-lg px-4 py-2 ${
+                        message.role === "user"
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-200 text-gray-800"
+                      }`}
+                    >
+                      {message.content}
+                    </div>
+
+                    {message.role === "assistant" &&
+                      message.product &&
+                      message.product.length > 0 && (
+                        <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                          {message.product.map((prod) => (
+                            <ProductCardChat key={prod.$id} product={prod} />
+                          ))}
+                        </div>
+                      )}
                   </div>
                 </div>
               ))}
+
+              {isLoading && (
+                <div className="flex justify-start">
+                  <div className="rounded-lg bg-gray-200 px-4 py-2 text-gray-800">
+                    <LoadingDots />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Input Area */}
           <div className="bg-primary-color dark:bg-primary-dark-color border-t border-gray-200 p-4">
             <div className="flex items-center gap-2">
               <div className="relative flex-1">
@@ -93,8 +160,9 @@ export default function ZenithBeeChatBot() {
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyPress}
                   placeholder="Type your message..."
-                  className="focus:ring-black-500 w-full resize-none rounded-md border border-gray-300 p-3 pr-10 focus:ring-2 focus:outline-none"
+                  className="focus:ring-black-500 w-full resize-none rounded-md border border-gray-300 p-3 pr-10 focus:outline-none"
                   rows={1}
+                  disabled={isLoading}
                 />
                 {input && (
                   <button
@@ -107,9 +175,9 @@ export default function ZenithBeeChatBot() {
               </div>
               <button
                 onClick={handleSend}
-                disabled={!input.trim()}
+                disabled={!input.trim() || isLoading}
                 className={`rounded-md p-3 ${
-                  input.trim()
+                  input.trim() && !isLoading
                     ? "bg-blue-600 text-white hover:bg-blue-700"
                     : "cursor-not-allowed bg-gray-200 text-gray-400"
                 }`}

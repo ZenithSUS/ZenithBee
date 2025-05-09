@@ -4,13 +4,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState, useEffect, useRef } from "react";
 import { useGetUserAddresses } from "../hooks/users";
-import { OrderDetail } from "../utils/types";
 import { FaRegWindowClose, FaTrashAlt } from "react-icons/fa";
 import { OrderModal } from "./modals/order";
 import { ReserveModal } from "./modals/reserved";
+import { useOrderContext } from "../context/order";
 
-type OrderType = {
-  order: OrderDetail;
+type OrderDetailsProps = {
   setCurrentOrder: React.Dispatch<React.SetStateAction<string>>;
 };
 
@@ -22,49 +21,66 @@ const orderSchema = z.object({
   address: z.string().min(1, { message: "Please select an address." }),
 });
 
-export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
+export default function OrderDetails({}: OrderDetailsProps) {
   const userId = JSON.parse(localStorage.getItem("id") || "") as string;
   const currentAddressRef = useRef<HTMLHeadingElement | null>(null);
-  const [total, setTotal] = useState<number>(0);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [isReservedModalOpen, setIsReservedModalOpen] = useState(false);
-  const [orders, setOrders] = useState<OrderDetail[]>([]);
   const [isVisible, setIsVisible] = useState(false);
-  const [selectedAddress, setSelectedAddress] = useState<string>("");
-  const [isAddressLocked, setIsAddressLocked] = useState<boolean>(false);
   const { data: userAddresses, isLoading } = useGetUserAddresses(userId);
 
-  const priceNumber = parseFloat(order.price);
-  const priceSizes = {
-    small: priceNumber.toFixed(2),
-    medium: (priceNumber + priceNumber * 0.35).toFixed(2),
-    large: (priceNumber + priceNumber * 0.5).toFixed(2),
-    "extra-large": (priceNumber + priceNumber * 0.65).toFixed(2),
-  };
+  const {
+    orders,
+    setOrders,
+    total,
+    setTotal,
+    selectedAddress,
+    setSelectedAddress,
+    isAddressLocked,
+    setIsAddressLocked,
+    currentOrderDetail,
+    setIsOrderDetailOpen,
+    orderDetailOpen,
+  } = useOrderContext();
 
+  // Define all hooks before any conditional returns
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsVisible(true);
     }, 100);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [orderDetailOpen]);
 
   useEffect(() => {
-    if (userAddresses && userAddresses.address.length > 0) {
+    if (userAddresses && userAddresses.address.length > 0 && !selectedAddress) {
       setSelectedAddress(userAddresses.address[0]);
-      form.setValue("address", userAddresses.address[0]);
+      if (form) {
+        form.setValue("address", userAddresses.address[0]);
+      }
     }
-  }, [userAddresses]);
+  }, [userAddresses, selectedAddress, setSelectedAddress]);
 
   const form = useForm({
     resolver: zodResolver(orderSchema),
     defaultValues: {
       quantity: "",
       size: "",
-      address: "",
+      address: selectedAddress || "",
     },
   });
+
+  if (!currentOrderDetail) {
+    return null;
+  }
+
+  const priceNumber = parseFloat(currentOrderDetail.price);
+  const priceSizes = {
+    small: priceNumber.toFixed(2),
+    medium: (priceNumber + priceNumber * 0.35).toFixed(2),
+    large: (priceNumber + priceNumber * 0.5).toFixed(2),
+    "extra-large": (priceNumber + priceNumber * 0.65).toFixed(2),
+  };
 
   const removeOrder = (id: string) => {
     setOrders((prev) => {
@@ -104,7 +120,7 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
       }
 
       const enhancedOrder = {
-        ...order,
+        ...currentOrderDetail,
         tmpId: uuidv4(),
         quantity: parseInt(data.quantity),
         size: data.size,
@@ -146,22 +162,10 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
   };
 
   const handleClose = () => {
-    if (orders.length === 0) {
-      setIsVisible(false);
-      setCurrentOrder("");
-    } else {
-      const confirmClose = window.confirm(
-        "You have pending orders. Are you sure you want to close?",
-      );
-      if (confirmClose) {
-        setIsVisible(false);
-
-        setCurrentOrder("");
-        setOrders([]);
-        setTotal(0);
-        setIsAddressLocked(false); // Reset address lock when closing
-      }
-    }
+    setIsVisible(false);
+    setTimeout(() => {
+      setIsOrderDetailOpen(false);
+    }, 300); // Wait for animation to complete
   };
 
   return (
@@ -219,19 +223,23 @@ export default function OrderDetails({ order, setCurrentOrder }: OrderType) {
         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="grid grid-cols-1 gap-1.5 self-start">
             <img
-              src={order.image}
-              alt={order.name}
+              src={currentOrderDetail.image}
+              alt={currentOrderDetail.name}
               className="mx-auto h-40 w-40 rounded-2xl object-cover sm:mx-0 sm:h-52 sm:w-52"
             />
             <p className="text-sm break-all md:text-base">
-              {order.description}
+              {currentOrderDetail.description}
             </p>
           </div>
 
           <div className="flex flex-col gap-3">
             <div className="flex justify-between">
-              <h1 className="text-base font-bold md:text-lg">{order.name}</h1>
-              <p className="text-base font-bold md:text-lg">${order.price}</p>
+              <h1 className="text-base font-bold md:text-lg">
+                {currentOrderDetail.name}
+              </h1>
+              <p className="text-base font-bold md:text-lg">
+                ${currentOrderDetail.price}
+              </p>
             </div>
 
             <form

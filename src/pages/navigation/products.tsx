@@ -1,32 +1,41 @@
-// import { productFilter } from "../../data/product-filter";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useGetProducts } from "../../hooks/products";
-import { ShowProducts } from "../../utils/types";
 import HeroImg from "../../assets/ui/hero.png";
 import ZenitBeeAI from "../../components/zenithbee-ai";
 import ProductCard from "../../components/product-card";
 import OrderDetails from "../../components/order-details";
 import Loading from "../../components/loading";
+import { useOrderContext } from "../../context/order";
+import { initialData } from "../../utils/constants/order-detail";
+import { OrderDetail } from "../../utils/types";
 
 export default function Products() {
-  const [currentOrder, setCurrentOrder] = useState<string>("");
-  const [orderDetail, setOrderDetail] = useState<ShowProducts | null>(null);
+  const {
+    setCurrentOrderDetail,
+    currentOrder,
+    orderDetailOpen,
+    setIsOrderDetailOpen,
+    setCurrentOrder,
+  } = useOrderContext();
+
   const { data: products, isLoading } = useGetProducts();
 
   useEffect(() => {
     if (currentOrder && products && products.length > 0) {
       const data = products.find((prod) => prod.name === currentOrder);
-      setOrderDetail(data || null);
-    } else {
-      setOrderDetail(null);
+      if (data) {
+        setCurrentOrderDetail(data as OrderDetail);
+      } else {
+        setCurrentOrderDetail(initialData);
+      }
     }
-  }, [currentOrder, products]);
+  }, [currentOrder, products, setCurrentOrderDetail]);
 
   if (isLoading) return <Loading />;
 
   return (
     <div
-      className={`grid w-full ${orderDetail ? "grid-cols-[65%_35%]" : "grid-cols-1"} mt-3 gap-6`}
+      className={`grid w-full ${orderDetailOpen ? "md:grid-cols-[65%_35%]" : "grid-cols-1"} mt-3 gap-6`}
     >
       <div className="flex min-h-screen flex-col gap-3">
         <ZenitBeeAI />
@@ -50,23 +59,6 @@ export default function Products() {
           />
         </div>
 
-        {/* Product Filter
-        <div className="bg-primary-color dark:bg-primary-dark-color sticky top-0 z-[20] flex w-full items-center justify-baseline gap-10 overflow-auto px-2 py-4 md:gap-5">
-          {productFilter.map((filter, index) => (
-            <div
-              key={index}
-              className="flex cursor-pointer items-center gap-3 md:gap-1"
-            >
-              <img
-                src={filter.image}
-                alt={filter.name}
-                className="w-6 dark:brightness-100 dark:invert"
-              />
-              <h2 className="text-md text-center">{filter.name}</h2>
-            </div>
-          ))}
-        </div> */}
-
         {/*Products */}
         <div className="flex flex-col place-items-center gap-2 md:grid md:grid-cols-2 md:gap-5 lg:grid-cols-3">
           {products?.map((product, index) => (
@@ -74,26 +66,13 @@ export default function Products() {
               key={index}
               product={product}
               setCurrentOrder={setCurrentOrder}
+              setIsOrderDetailOpen={setIsOrderDetailOpen}
             />
           ))}
         </div>
       </div>
 
-      {orderDetail && (
-        <OrderDetails
-          order={{
-            ...orderDetail,
-            tmpId: "temp-id",
-            address: "",
-            size: "",
-            quantity: 1,
-            subtotal: 0,
-            user: "",
-            product: orderDetail,
-          }}
-          setCurrentOrder={setCurrentOrder}
-        />
-      )}
+      {orderDetailOpen && <OrderDetails setCurrentOrder={setCurrentOrder} />}
     </div>
   );
 }

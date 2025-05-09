@@ -1,4 +1,4 @@
-import { useState, useTransition } from "react";
+import React, { useState, useTransition } from "react";
 import {
   useAddToFavorite,
   useGetFavoriteByUser,
@@ -14,9 +14,14 @@ import Loading from "./loading";
 type ProductType = {
   product: ShowProducts;
   setCurrentOrder?: (name: string) => void;
+  setIsOrderDetailOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function ProductCard({ product, setCurrentOrder }: ProductType) {
+export default function ProductCard({
+  product,
+  setCurrentOrder,
+  setIsOrderDetailOpen,
+}: ProductType) {
   const userId = JSON.parse(localStorage.getItem("id") as string);
   const { data: favorite, isLoading } = useGetFavoriteByUser(userId);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -28,6 +33,7 @@ export default function ProductCard({ product, setCurrentOrder }: ProductType) {
   const checkDetails = (name: string) => {
     if (setCurrentOrder) {
       setCurrentOrder(name);
+      setIsOrderDetailOpen(true);
     }
   };
 

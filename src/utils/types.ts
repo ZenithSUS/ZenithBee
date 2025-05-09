@@ -43,6 +43,7 @@ export type Products = {
   description: string;
   image: string;
   price: string;
+  rating: string;
   foodType: string;
   isFavorite: boolean;
 };
@@ -145,4 +146,10 @@ export type ReservedItems = {
   user: string;
   image: string;
   product: Products;
+};
+
+export type Messages = {
+  role: "user" | "assistant";
+  content: string;
+  product: Products[] | null;
 };
