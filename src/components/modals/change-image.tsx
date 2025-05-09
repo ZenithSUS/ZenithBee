@@ -96,8 +96,6 @@ export const ChangeImageModal = ({
       console.error("Error Updating Images:", error);
       toast.error("Error Updating Images");
     }
-
-    setIsModalOpen(false);
   };
 
   return (

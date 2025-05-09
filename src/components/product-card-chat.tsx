@@ -34,14 +34,18 @@ const ProductCardChat = ({ product }: { product: Products }) => {
       {/* Product info */}
       <div className="flex flex-1 flex-col p-3">
         <div className="mb-2 flex-1">
-          <h3 className="line-clamp-2 text-sm font-medium text-gray-800">
-            {product.name}
-          </h3>
-          <div className="mt-1 flex items-center gap-2">
-            <span className="text-sm font-bold text-blue-600">
-              {product.price}
-            </span>
+          <div className="flex items-center justify-between">
+            <h3 className="line-clamp-2 text-sm font-medium text-gray-800">
+              {product.name}
+            </h3>
+
+            <div className="mt-1 flex items-center gap-2">
+              <span className="text-sm font-bold text-blue-600">
+                {product.price}
+              </span>
+            </div>
           </div>
+          <div className="font-md text-gray-500">{product.foodType}</div>
 
           {/* Rating if available */}
           {product.rating && (
