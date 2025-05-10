@@ -152,5 +152,6 @@ export type ReservedItems = {
 export type Messages = {
   role: "user" | "assistant";
   content: string;
-  product: Products[] | null;
+  product?: Products[] | null;
+  reserved?: ShowReserved[] | null;
 };

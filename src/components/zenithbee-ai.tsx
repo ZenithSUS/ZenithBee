@@ -6,8 +6,10 @@ import { Messages } from "../utils/types";
 import ReactMarkdown from "react-markdown";
 import ProductCardChat from "./product-card-chat";
 import LoadingDots from "./loading-ai";
+import ReservedCardChat from "./reserved-card-chat";
 
 export default function ZenithBeeChatBot() {
+  const userId = JSON.parse(localStorage.getItem("id") as string);
   const [isPowerOn, setIsPowerOn] = useState(false);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -17,6 +19,7 @@ export default function ZenithBeeChatBot() {
       role: "assistant",
       content: "How can I assist you today?",
       product: null,
+      reserved: null,
     },
   ]);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -32,14 +35,17 @@ export default function ZenithBeeChatBot() {
     if (input.trim()) {
       setMessages((prev) => [
         ...prev,
-        { role: "user", content: input, product: [] },
+        {
+          role: "user",
+          content: input,
+        },
       ]);
 
       setIsLoading(true);
       setInput("");
 
       try {
-        const response = await zenithAI({ input });
+        const response = await zenithAI({ input, userId });
         console.log(response);
 
         setTimeout(() => {
@@ -49,6 +55,7 @@ export default function ZenithBeeChatBot() {
               role: "assistant",
               content: response.message,
               product: response.product,
+              reserved: response.reserved,
             },
           ]);
           setIsLoading(false);
@@ -136,6 +143,16 @@ export default function ZenithBeeChatBot() {
                         <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                           {message.product.map((prod) => (
                             <ProductCardChat key={prod.$id} product={prod} />
+                          ))}
+                        </div>
+                      )}
+
+                    {message.role === "assistant" &&
+                      message.reserved &&
+                      message.reserved.length > 0 && (
+                        <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                          {message.reserved.map((res) => (
+                            <ReservedCardChat key={res.$id} reserved={res} />
                           ))}
                         </div>
                       )}
