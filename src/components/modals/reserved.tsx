@@ -15,6 +15,10 @@ type ReserveModal = {
 type ReservedData = {
   orderDetail: OrderDetail[];
   address: string;
+  setOrders: React.Dispatch<React.SetStateAction<OrderDetail[]>>;
+  setSelectedAddress: React.Dispatch<React.SetStateAction<string>>;
+  setIsAddressLocked: React.Dispatch<React.SetStateAction<boolean>>;
+  setTotal: React.Dispatch<React.SetStateAction<number>>;
 };
 
 export function ReserveModal({
@@ -22,6 +26,10 @@ export function ReserveModal({
   setIsModalOpen,
   orderDetail,
   address,
+  setOrders,
+  setSelectedAddress,
+  setIsAddressLocked,
+  setTotal,
 }: ReserveModal & ReservedData) {
   const name = JSON.parse(localStorage.getItem("name") || "");
   const [modalScale, setModalScale] = useState(false);
@@ -48,6 +56,10 @@ export function ReserveModal({
       });
     });
     if (!isPending) {
+      setOrders([]);
+      setTotal(0);
+      setIsAddressLocked(false);
+      setSelectedAddress("");
       navigate("/reserved");
     }
   };

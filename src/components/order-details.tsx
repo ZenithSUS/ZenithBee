@@ -170,13 +170,17 @@ export default function OrderDetails({}: OrderDetailsProps) {
 
   return (
     <div
-      className={`bg-primary-color dark:bg-primary-dark-color fixed top-0 right-0 bottom-0 z-50 flex flex-col gap-2.5 overflow-auto p-5 text-black shadow-lg transition-transform duration-300 ease-in-out dark:text-white ${isVisible ? "translate-x-0" : "translate-x-full"} w-full md:w-[50%] lg:w-[40%] xl:w-[30%]`}
+      className={`bg-primary-color dark:bg-primary-dark-color fixed top-0 right-0 bottom-0 z-50 flex flex-col gap-2.5 overflow-auto p-5 text-black shadow-lg transition-transform duration-300 ease-in-out dark:text-white ${isVisible ? "translate-x-0" : "translate-x-full"} w-full lg:w-[40%] xl:w-[30%]`}
     >
       <ReserveModal
         isModalOpen={isReservedModalOpen}
         setIsModalOpen={setIsReservedModalOpen}
         orderDetail={orders}
         address={selectedAddress}
+        setIsAddressLocked={setIsAddressLocked}
+        setSelectedAddress={setSelectedAddress}
+        setOrders={setOrders}
+        setTotal={setTotal}
       />
 
       <OrderModal
@@ -184,6 +188,10 @@ export default function OrderDetails({}: OrderDetailsProps) {
         setIsModalOpen={setIsOrderModalOpen}
         orderDetail={orders}
         address={selectedAddress}
+        setIsAddressLocked={setIsAddressLocked}
+        setSelectedAddress={setSelectedAddress}
+        setOrders={setOrders}
+        setTotal={setTotal}
       />
       <FaRegWindowClose
         className="absolute top-5 right-5 cursor-pointer transition duration-300 ease-in-out hover:scale-105"
@@ -355,19 +363,19 @@ export default function OrderDetails({}: OrderDetailsProps) {
 
       <div className="mt-auto flex items-center justify-between text-base md:text-lg">
         <h2 className="text-gray-500">Total</h2>
-        <p>$ {total.toFixed(2)}</p>
+        <p>$ {total <= 0 ? "0.00" : total.toFixed(2)}</p>
       </div>
 
       <div className="grid grid-cols-2 gap-2">
         <button
-          className="bg-accent-color hover:bg-accent-color/80 mt-2 cursor-pointer rounded-md p-2 text-sm text-white transition duration-300 ease-in-out hover:scale-105 disabled:cursor-not-allowed disabled:bg-gray-500 md:mt-4 md:text-base"
+          className="bg-accent-color hover:bg-accent-color/80 dark:bg-accent-dark-color dark:hover:bg-accent-dark-color/80 mt-2 cursor-pointer rounded-md p-2 text-sm text-white transition duration-300 ease-in-out hover:scale-105 disabled:cursor-not-allowed disabled:bg-gray-500 md:mt-4 md:text-base"
           disabled={orders.length === 0}
           onClick={handleOrder}
         >
           Submit Order
         </button>
         <button
-          className="bg-accent-color hover:bg-accent-color/80 mt-2 cursor-pointer rounded-md p-2 text-sm text-white transition duration-300 ease-in-out hover:scale-105 disabled:cursor-not-allowed disabled:bg-gray-500 md:mt-4 md:text-base"
+          className="bg-accent-color hover:bg-accent-color/80 dark:bg-accent-dark-color dark:hover:bg-accent-dark-color/80 mt-2 cursor-pointer rounded-md p-2 text-sm text-white transition duration-300 ease-in-out hover:scale-105 disabled:cursor-not-allowed disabled:bg-gray-500 md:mt-4 md:text-base"
           onClick={handleReserve}
           disabled={orders.length === 0}
         >

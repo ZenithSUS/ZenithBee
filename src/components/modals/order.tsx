@@ -10,6 +10,10 @@ import { useQueryClient } from "@tanstack/react-query";
 type OrderData = {
   orderDetail: OrderDetail[];
   address: string;
+  setOrders: React.Dispatch<React.SetStateAction<OrderDetail[]>>;
+  setSelectedAddress: React.Dispatch<React.SetStateAction<string>>;
+  setIsAddressLocked: React.Dispatch<React.SetStateAction<boolean>>;
+  setTotal: React.Dispatch<React.SetStateAction<number>>;
 };
 
 type OrderModal = OrderData & {
@@ -22,6 +26,10 @@ export function OrderModal({
   setIsModalOpen,
   orderDetail,
   address,
+  setOrders,
+  setSelectedAddress,
+  setIsAddressLocked,
+  setTotal,
 }: OrderModal) {
   const name = JSON.parse(localStorage.getItem("name") || "");
   const [modalScale, setModalScale] = useState(false);
@@ -50,6 +58,10 @@ export function OrderModal({
       });
     });
     if (!isPending) {
+      setOrders([]);
+      setTotal(0);
+      setIsAddressLocked(false);
+      setSelectedAddress("");
       navigate("/orders");
     }
   };

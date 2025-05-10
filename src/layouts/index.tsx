@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 export default function MainLayout() {
   const [authChecked, setAuthChecked] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -49,11 +50,17 @@ export default function MainLayout() {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
-      <Header />
+      <Header
+        isSidebarOpen={isSidebarOpen}
+        setIsSidebarOpen={setIsSidebarOpen}
+      />
 
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar />
-        <main className="flex-1 overflow-auto px-2 md:ml-[110px]">
+        <Sidebar
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+        />
+        <main className="flex-1 overflow-auto px-2 lg:ml-[110px]">
           <Outlet />
         </main>
       </div>

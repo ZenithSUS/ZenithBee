@@ -35,7 +35,7 @@ export default function Products() {
 
   return (
     <div
-      className={`grid w-full ${orderDetailOpen ? "md:grid-cols-[65%_35%]" : "grid-cols-1"} mt-3 gap-6`}
+      className={`grid w-full ${orderDetailOpen ? "lg:grid-cols-[65%_35%]" : "grid-cols-1"} mt-3 gap-6`}
     >
       <div className="flex min-h-screen flex-col gap-3">
         <ZenitBeeAI />

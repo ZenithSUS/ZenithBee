@@ -79,7 +79,7 @@ export default function Account() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 md:flex-row">
+          <div className="flex w-full flex-col gap-3 md:flex-row">
             <button
               className="bg-accent-color dark:bg-accent-dark-color hover:bg-accent-color/80 dark:hover:bg-accent-dark-color/80 cursor-pointer rounded-md p-2 text-white transition duration-300 ease-in-out hover:scale-105"
               onClick={() => openModal("address")}

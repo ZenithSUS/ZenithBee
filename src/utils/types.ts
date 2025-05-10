@@ -46,6 +46,7 @@ export type Products = {
   rating: string;
   foodType: string;
   isFavorite: boolean;
+  bought: Number;
 };
 
 export type AddProduct = Omit<Products, "$id" | "$createdAt" | "$updatedAt">;

@@ -45,7 +45,7 @@ export function ProductModal({
     >
       <div className="flex min-w-screen flex-col items-center justify-center md:min-w-[400px]">
         <div
-          className={`card bg-primary-color dark:bg-primary-dark-color w-96 shadow-sm transition-all duration-300 ease-in-out ${
+          className={`card bg-primary-color dark:bg-primary-dark-color w-[300px] shadow-sm transition-all duration-300 ease-in-out md:w-[400px] ${
             modalScale ? "scale-100 opacity-100" : "scale-75 opacity-0"
           }`}
         >
