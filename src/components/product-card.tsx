@@ -14,7 +14,7 @@ import Loading from "./loading";
 type ProductType = {
   product: ShowProducts;
   setCurrentOrder?: (name: string) => void;
-  setIsOrderDetailOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsOrderDetailOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function ProductCard({
@@ -33,7 +33,9 @@ export default function ProductCard({
   const checkDetails = (name: string) => {
     if (setCurrentOrder) {
       setCurrentOrder(name);
-      setIsOrderDetailOpen(true);
+      if (setIsOrderDetailOpen) {
+        setIsOrderDetailOpen(true);
+      }
     }
   };
 

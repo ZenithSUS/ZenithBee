@@ -5,6 +5,7 @@ import { OrderDetail, ShowProducts } from "../../utils/types";
 import { useNavigate } from "react-router-dom";
 import { useOrderContext } from "../../context/order";
 import { initialData } from "../../utils/constants/order-detail";
+import ZenitBeeAI from "../../components/zenithbee-ai";
 import FoodCarousel from "../../components/food-carosel";
 import Loading from "../../components/loading";
 import OrderDetails from "../../components/order-details";
@@ -61,6 +62,7 @@ export default function Home() {
       className={`grid w-full ${orderDetailOpen ? "md:grid-cols-1 lg:grid-cols-[65%_35%]" : "grid-cols-1"} mt-3 gap-6 pb-10`}
     >
       <div className="flex min-h-screen flex-col gap-3">
+        <ZenitBeeAI />
         {/* Hero Section with Carousel */}
         <div className="relative">
           <div className="h-[350px] w-full bg-black"></div>
