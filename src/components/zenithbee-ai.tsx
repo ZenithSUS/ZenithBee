@@ -3,6 +3,7 @@ import { Power, Send, X, Minimize } from "lucide-react";
 import { FaRobot } from "react-icons/fa";
 import { zenithAI } from "../actions/zenith-ai";
 import { Messages } from "../utils/types";
+import ReactMarkdown from "react-markdown";
 import ProductCardChat from "./product-card-chat";
 import LoadingDots from "./loading-ai";
 import ReservedCardChat from "./reserved-card-chat";
@@ -133,7 +134,7 @@ export default function ZenithBeeChatBot() {
                           : "bg-gray-200 text-gray-800"
                       }`}
                     >
-                      {message.content}
+                      <ReactMarkdown>{message.content}</ReactMarkdown>
                     </div>
 
                     {message.role === "assistant" &&
