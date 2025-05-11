@@ -168,7 +168,7 @@ export default function Register() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-      <div className="w-full max-w-2xl flex-col items-center justify-center rounded-2xl bg-[#ffffff] p-8 shadow-xl">
+      <div className="bg-primary-color dark:bg-primary-dark-color w-full max-w-2xl flex-col items-center justify-center rounded-2xl p-8 shadow-xl">
         <div className="mx-auto flex flex-col items-center justify-center gap-3 pb-4">
           <div>
             <img src={ZenithBee} alt="Logo" width="63" />

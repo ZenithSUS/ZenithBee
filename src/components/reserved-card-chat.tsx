@@ -1,68 +1,88 @@
-import { useState } from "react";
+import { ShoppingCart } from "lucide-react";
 import { ShowReserved } from "../utils/types";
-import { ProductModal } from "./modals/product";
-import { Eye } from "lucide-react";
 
-const ReservedCardChat = ({ reserved }: { reserved: ShowReserved }) => {
-  let product = null;
+import { useNavigate } from "react-router-dom";
 
-  if (reserved) {
-    product = Array.isArray(reserved.product)
-      ? reserved.product[0]
-      : reserved.product;
-  }
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+const ReservedCardChat = ({ reserved }: { reserved: ShowReserved[] }) => {
+  const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-md transition-all duration-300 hover:shadow-lg">
-      <ProductModal
-        isModalOpen={isModalOpen}
-        setIsModalOpen={setIsModalOpen}
-        product={product}
-      />
-      <div className="relative h-36 w-full overflow-hidden bg-gray-50">
-        <img
-          src={product?.image}
-          alt={product?.name}
-          className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
-          onClick={() => setIsModalOpen(!isModalOpen)}
-        />
-      </div>
-
-      {/* Product info */}
-      <div className="flex flex-1 flex-col p-3">
-        <div className="mb-2 flex-1">
-          <div className="flex items-center justify-between gap-2">
-            <h3 className="line-clamp-2 text-start text-sm font-medium text-gray-800">
-              {product?.name}
-            </h3>
-
-            <div className="mt-1 flex items-center gap-2">
-              <span className="text-sm font-bold text-blue-600">
-                ${reserved.price}
-              </span>
+    <div className="flex max-w-[600px] flex-col overflow-hidden rounded-lg border border-gray-200 bg-white p-5 text-black shadow-md transition-all duration-300 hover:shadow-lg">
+      <h1 className="text-2xl font-bold">Reserved Product</h1>
+      {reserved.map((res) => (
+        <div className="flex w-full flex-col gap-3" key={res.reservedId}>
+          <div className="flex flex-col gap-2 p-3">
+            <div className="flex flex-col md:grid md:grid-cols-2">
+              <div className="flex flex-col">
+                <p className="font-md mb-2">
+                  <span className="font-bold">Reserved Id: </span>
+                  {res.reservedId}
+                </p>
+                <p className="font-md mb-2">
+                  <span className="font-bold">Address: </span>
+                  {res.address}
+                </p>
+              </div>
+              <div className="flex flex-col">
+                <p className="font-md">
+                  <span className="font-bold">Total Price:</span>{" "}
+                  {res.totalPrice}
+                </p>
+                <p className="font-md">
+                  <span className="font-bold">Total Items:</span>{" "}
+                  {res.totalQuantity}
+                </p>
+              </div>
             </div>
+            <div className="flex items-center gap-2">
+              <button
+                className="bg-accent-color dark:bg-accent-dark-color hover:bg-accent-color/80 hover:dark:bg-accent-dark-color/80 flex cursor-pointer items-center gap-2 rounded-lg px-4 py-2 text-sm text-white transition-all duration-300 hover:scale-105"
+                onClick={() => navigate(`/reserved`)}
+              >
+                <ShoppingCart />
+                Go to Reserved
+              </button>
+            </div>
+
+            <h1 className="text-2xl font-bold">Items</h1>
+            {Array.isArray(res.items) && res.items.length > 0 ? (
+              res.items.map((item, index) => (
+                <div
+                  className="flex flex-col gap-2 p-3"
+                  key={`${item.product.$id}-${index}`}
+                >
+                  <div className="bg-primary-dark-color flex flex-col gap-5 p-5 text-white md:grid md:grid-cols-2">
+                    <div className="flex flex-col">
+                      <p className="font-md mb-2">
+                        <span className="font-bold">Product Name: </span>
+                        {item.product.name || item.product[0].name}
+                      </p>
+                      <p className="font-md mb-2">
+                        <span className="font-bold">Quantity: </span>
+                        {item.quantity}
+                      </p>
+                      <p className="font-md">
+                        <span className="font-bold">Price:</span>{" "}
+                        {Number(parseFloat(String(item.price)).toFixed(2))}
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      <img
+                        className="h-32 w-32 object-cover"
+                        src={item.product.image || item.product[0].image}
+                        alt={item.product.name || item.product[0].name}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-md">No items found</p>
+            )}
           </div>
         </div>
-        <span className="font-md text-gray-600">
-          Qty: {reserved.quantity} | Size: {reserved.size}
-        </span>
-
-        <span className="font-md text-gray-600">
-          Address: {reserved.address}
-        </span>
-
-        {/* Action buttons */}
-        <div className="mt-2 flex gap-2">
-          <button
-            className="flex flex-1 items-center justify-center gap-1 rounded-md bg-blue-600 px-2 py-1.5 text-xs font-medium text-white transition-colors hover:bg-blue-700"
-            onClick={() => setIsModalOpen(!isModalOpen)}
-          >
-            <Eye size={14} />
-            <span>Details</span>
-          </button>
-        </div>
-      </div>
+      ))}
     </div>
   );
 };

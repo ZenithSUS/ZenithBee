@@ -150,10 +150,8 @@ export default function ZenithBeeChatBot() {
                     {message.role === "assistant" &&
                       message.reserved &&
                       message.reserved.length > 0 && (
-                        <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                          {message.reserved.map((res) => (
-                            <ReservedCardChat key={res.$id} reserved={res} />
-                          ))}
+                        <div className="mt-2">
+                          <ReservedCardChat reserved={message.reserved} />
                         </div>
                       )}
                   </div>
