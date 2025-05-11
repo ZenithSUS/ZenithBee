@@ -13,6 +13,7 @@ export const initialData: OrderDetail = {
   quantity: 0,
   size: "",
   address: "",
+  bought: 0,
   subtotal: 0,
   user: "",
   product: {
@@ -24,5 +25,6 @@ export const initialData: OrderDetail = {
     rating: "",
     foodType: "",
     isFavorite: false,
+    bought: 0,
   },
 };
