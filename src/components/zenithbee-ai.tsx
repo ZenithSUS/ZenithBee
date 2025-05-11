@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect, useRef } from "react";
 import { Power, Send, X, Minimize } from "lucide-react";
 import { FaRobot } from "react-icons/fa";
