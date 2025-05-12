@@ -3,7 +3,6 @@ import EmailSvg from "../../assets/svg/email";
 import PasswordSvg from "../../assets/svg/password";
 import { z } from "zod";
 import { account } from "../../appwrite";
-import { toast } from "react-toastify";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -44,12 +43,16 @@ export default function Login() {
           localStorage.setItem("session", JSON.stringify(session.current));
 
           const acc = await account.get();
+          const accPrefs = await account.getPrefs();
           localStorage.setItem("name", JSON.stringify(acc.name));
           localStorage.setItem("email", JSON.stringify(acc.email));
           localStorage.setItem("joined", JSON.stringify(acc.$createdAt));
+          localStorage.setItem(
+            "theme",
+            accPrefs.theme === "dark" ? "dark" : "light",
+          );
 
-          toast.success("Logged in successfully!");
-          navigate("/");
+          window.location.href = "/";
         } catch (error) {
           handleLoginError(error);
         }
