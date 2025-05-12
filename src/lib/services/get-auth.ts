@@ -25,7 +25,7 @@ export default async function fetchAuthUser(user: boolean) {
           "profileId",
           JSON.stringify(data.prefs?.imageId || ""),
         );
-        localStorage.setItem("theme", JSON.stringify(data.prefs?.theme || ""));
+        localStorage.setItem("theme", data.prefs?.theme || "");
         return user;
       } else {
         await cleanupSession();
