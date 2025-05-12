@@ -1,7 +1,9 @@
 import { useTheme } from "../context/theme";
 import { SunIcon, MoonIcon, MenuIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTransition } from "react";
 import Anonymous from "../assets/ui/anonymous.jpg";
+import sleep from "../utils/functions/sleep";
 
 type HeaderProps = {
   isSidebarOpen: boolean;
@@ -12,6 +14,7 @@ export default function Header({
   isSidebarOpen,
   setIsSidebarOpen,
 }: HeaderProps) {
+  const [isPending, startTransition] = useTransition();
   const profileImage = JSON.parse(
     localStorage.getItem("profileImage") as string,
   );
@@ -21,6 +24,13 @@ export default function Header({
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const handleSwitchTheme = () => {
+    startTransition(async () => {
+      toggleDarkMode();
+      await sleep(500);
+    });
   };
 
   return (
@@ -55,8 +65,9 @@ export default function Header({
           </div>
           <button
             type="button"
-            onClick={toggleDarkMode}
+            onClick={() => handleSwitchTheme()}
             className="cursor-pointer"
+            disabled={isPending}
           >
             {isDarkMode ? <MoonIcon size={25} /> : <SunIcon size={25} />}
           </button>

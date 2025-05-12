@@ -121,6 +121,7 @@ export default function Register() {
           userId: acc.$id,
           profileImage: "N/A",
           profileId: "N/A",
+          theme: "light",
         };
 
         if (data.image instanceof FileList && data.image.length > 0) {
@@ -144,6 +145,7 @@ export default function Register() {
         account.updatePrefs({
           imageUrl: userData.profileImage,
           imageId: userData.profileId,
+          theme: userData.theme,
         });
 
         await createUser(userData);
@@ -158,6 +160,7 @@ export default function Register() {
           "profileImage",
           JSON.stringify(userData.profileImage),
         );
+        localStorage.setItem("theme", JSON.stringify(userData.theme));
         toast.success("Registered Successfully!");
         navigate("/");
       });
