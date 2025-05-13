@@ -1,13 +1,20 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useGetProducts } from "../../hooks/products";
+import { useOrderContext } from "../../context/order";
+import { initialData } from "../../utils/constants/order-detail";
+import { OrderDetail, ShowProducts } from "../../utils/types";
+import { productFilter } from "../../data/product-filter";
+import {
+  sortByRating,
+  sortByBought,
+  sortByNewComer,
+  sortByPrice,
+} from "../../utils/functions/product-filter";
 import HeroImg from "../../assets/ui/hero.png";
 import ZenitBeeAI from "../../components/zenithbee-ai";
 import ProductCard from "../../components/product-card";
 import OrderDetails from "../../components/order-details";
 import Loading from "../../components/loading";
-import { useOrderContext } from "../../context/order";
-import { initialData } from "../../utils/constants/order-detail";
-import { OrderDetail } from "../../utils/types";
 
 export default function Products() {
   const {
@@ -18,18 +25,52 @@ export default function Products() {
     setCurrentOrder,
   } = useOrderContext();
 
-  const { data: products, isLoading } = useGetProducts();
+  const { data: allProducts, isLoading } = useGetProducts();
+  const [filteredProducts, setFilteredProducts] = useState<ShowProducts[]>([]);
+  const [activeFilter, setActiveFilter] = useState("all");
+
+  const filterProducts = (filter: string) => {
+    if (!allProducts || allProducts.length === 0) return [];
+
+    let result: ShowProducts[] = [];
+    switch (filter) {
+      case "top-rated":
+        result = sortByRating([...allProducts]);
+        break;
+      case "best-seller":
+        result = sortByBought([...allProducts]);
+        break;
+      case "newcomers":
+        result = sortByNewComer([...allProducts]);
+        break;
+      case "prices":
+        result = sortByPrice([...allProducts]);
+        break;
+      case "all":
+      default:
+        result = [...allProducts];
+    }
+
+    setFilteredProducts(result);
+    setActiveFilter(filter);
+  };
 
   useEffect(() => {
-    if (currentOrder && products && products.length > 0) {
-      const data = products.find((prod) => prod.name === currentOrder);
+    if (allProducts && allProducts.length > 0) {
+      filterProducts(activeFilter);
+    }
+  }, [allProducts]);
+
+  useEffect(() => {
+    if (currentOrder && allProducts && allProducts.length > 0) {
+      const data = allProducts.find((prod) => prod.name === currentOrder);
       if (data) {
         setCurrentOrderDetail(data as OrderDetail);
       } else {
         setCurrentOrderDetail(initialData);
       }
     }
-  }, [currentOrder, products, setCurrentOrderDetail]);
+  }, [currentOrder, allProducts, setCurrentOrderDetail]);
 
   if (isLoading) return <Loading />;
 
@@ -43,7 +84,7 @@ export default function Products() {
         {/*Hero Element*/}
         <div className="relative h-fit w-full overflow-hidden rounded-xl">
           <div className="absolute inset-0 z-10 flex items-center">
-            <div className="bg-accent-color dark:bg-accent-dark-color clip-path-polygon flex h-full w-[50%] flex-col items-center justify-center gap-1 p-5">
+            <div className="bg-accent-color dark:bg-accent-dark-color clip-path-polygon flex h-full w-[50%] flex-col items-center justify-center gap-1 p-5 text-center">
               <h1 className="font-sans text-2xl font-bold md:text-3xl">
                 30% Off
               </h1>
@@ -59,9 +100,29 @@ export default function Products() {
           />
         </div>
 
+        {/*Product Filters*/}
+        <div className="bg-primary-color dark:bg-primary-dark-color sticky top-0 z-20 flex w-full gap-6 overflow-auto p-5">
+          {productFilter.map((f, index) => (
+            <div
+              key={index}
+              className={`flex w-fit cursor-pointer items-center gap-2 rounded-lg p-2 transition-all ${activeFilter === f.value ? "border-b-accent-color dark:border-b-accent-dark-color border-b-4" : "hover:bg-gray-200 dark:hover:bg-gray-700"}`}
+              onClick={() => filterProducts(f.value)}
+            >
+              <img
+                src={f.image}
+                alt={f.name}
+                className="h-8 w-8 dark:brightness-100 dark:invert-100"
+              />
+              <h2 className="text-center text-lg font-medium overflow-ellipsis">
+                {f.name}
+              </h2>
+            </div>
+          ))}
+        </div>
+
         {/*Products */}
         <div className="flex flex-col place-items-center gap-2 md:grid md:grid-cols-2 md:gap-5 lg:grid-cols-3">
-          {products?.map((product, index) => (
+          {filteredProducts.map((product, index) => (
             <ProductCard
               key={index}
               product={product}

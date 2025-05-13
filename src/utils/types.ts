@@ -51,7 +51,7 @@ export type Products = {
 
 export type AddProduct = Omit<Products, "$id" | "$createdAt" | "$updatedAt">;
 
-export type ShowProducts = Omit<Products, "$createdAt" | "$updatedAt">;
+export type ShowProducts = Products;
 
 export type ProductsFilter = {
   name: string;
