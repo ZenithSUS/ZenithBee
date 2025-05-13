@@ -10,9 +10,7 @@ export const getAllOrders = async () => {
   return await axiosClient.get("/orders");
 };
 export const getOrderByUser = async (id: string) => {
-  return await axiosClient.get(`/orders/${id}`);
-};
-export const getOrderById = async (id: string) => {
+  console.log(id);
   return await axiosClient.get(`/orders/${id}`);
 };
 

@@ -16,6 +16,8 @@ export const initialData: OrderDetail = {
   bought: 0,
   subtotal: 0,
   user: "",
+  $createdAt: "",
+  $updatedAt: "",
   product: {
     $id: "",
     name: "",
@@ -26,5 +28,7 @@ export const initialData: OrderDetail = {
     foodType: "",
     isFavorite: false,
     bought: 0,
+    $createdAt: "",
+    $updatedAt: "",
   },
 };
