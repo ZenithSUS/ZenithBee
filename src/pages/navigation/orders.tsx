@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useGetOrderByUser } from "../../hooks/orders";
 import { ShowOrder } from "../../utils/types";
 import Loading from "../../components/loading";
+import { getColorStatus } from "../../utils/functions/color-status";
 
 export default function Orders() {
   const userId = JSON.parse(localStorage.getItem("id") as string);
@@ -59,7 +60,14 @@ export default function Orders() {
                   Total Price: ${orderGroup.totalPrice.toFixed(2)}
                 </p>
                 <p className="text-md">Address: {orderGroup.address}</p>
-                <p className="text-md">Status: {orderGroup.status}</p>
+                <p className="text-md mt-0.5 w-fit">
+                  Status:{" "}
+                  <span
+                    className={`text-md rounded-md border-2 p-1 ${getColorStatus(orderGroup.status)}`}
+                  >
+                    {orderGroup.status}
+                  </span>
+                </p>
               </div>
 
               <div className="flex items-center gap-5">

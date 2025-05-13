@@ -121,7 +121,6 @@ export default function Register() {
           userId: acc.$id,
           profileImage: "N/A",
           profileId: "N/A",
-          theme: "light",
         };
 
         if (data.image instanceof FileList && data.image.length > 0) {
@@ -145,7 +144,7 @@ export default function Register() {
         account.updatePrefs({
           imageUrl: userData.profileImage,
           imageId: userData.profileId,
-          theme: userData.theme,
+          theme: "light",
         });
 
         await createUser(userData);
@@ -160,7 +159,7 @@ export default function Register() {
           "profileImage",
           JSON.stringify(userData.profileImage),
         );
-        localStorage.setItem("theme", JSON.stringify(userData.theme));
+        localStorage.setItem("theme", "light");
         toast.success("Registered Successfully!");
         navigate("/");
       });
@@ -189,7 +188,7 @@ export default function Register() {
           className="flex flex-col"
           onSubmit={form.handleSubmit(registerAcc)}
         >
-          <div className="grid grid-cols-3 gap-4 pb-2">
+          <div className="flex flex-col gap-4 pb-2 md:grid md:grid-cols-3">
             <div>
               <label
                 htmlFor="firstName"
@@ -316,7 +315,7 @@ export default function Register() {
               </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="flex flex-col gap-2 md:grid md:grid-cols-2">
               <div className="pb-6">
                 <label
                   htmlFor="password"

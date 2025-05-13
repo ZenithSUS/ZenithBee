@@ -5,6 +5,7 @@ import { OrderDetail, ShowProducts } from "../../utils/types";
 import { useNavigate } from "react-router-dom";
 import { useOrderContext } from "../../context/order";
 import { initialData } from "../../utils/constants/order-detail";
+import ZenithBeeHero from "../../assets/ui/hero-carosel.jpg";
 import ZenitBeeAI from "../../components/zenithbee-ai";
 import FoodCarousel from "../../components/food-carosel";
 import Loading from "../../components/loading";
@@ -65,8 +66,12 @@ export default function Home() {
         <ZenitBeeAI />
         {/* Hero Section with Carousel */}
         <div className="relative">
-          <div className="h-[350px] w-full bg-black"></div>
-          <div className="bg-opacity-40 absolute inset-0 flex flex-col items-center justify-center bg-black p-4 text-white">
+          <img
+            src={ZenithBeeHero}
+            alt="ZenithBee"
+            className="h-[350px] w-full object-cover"
+          />
+          <div className="bg-opacity-40 absolute inset-0 flex flex-col items-center justify-center bg-black/55 p-4 text-white">
             <h1 className="mb-2 text-center text-4xl font-bold md:text-5xl">
               Welcome to ZenithBee!
             </h1>
