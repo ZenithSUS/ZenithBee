@@ -15,6 +15,7 @@ import ZenitBeeAI from "../../components/zenithbee-ai";
 import ProductCard from "../../components/product-card";
 import OrderDetails from "../../components/order-details";
 import Loading from "../../components/loading";
+import { useSearchParams } from "react-router-dom";
 
 export default function Products() {
   const {
@@ -24,10 +25,13 @@ export default function Products() {
     setIsOrderDetailOpen,
     setCurrentOrder,
   } = useOrderContext();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const { data: allProducts, isLoading } = useGetProducts();
   const [filteredProducts, setFilteredProducts] = useState<ShowProducts[]>([]);
-  const [activeFilter, setActiveFilter] = useState("all");
+  const [activeFilter, setActiveFilter] = useState(
+    searchParams.get("filter") || "all",
+  );
 
   const filterProducts = (filter: string) => {
     if (!allProducts || allProducts.length === 0) return [];
@@ -53,6 +57,14 @@ export default function Products() {
 
     setFilteredProducts(result);
     setActiveFilter(filter);
+  };
+
+  const handleFilter = (value: string) => {
+    setSearchParams((params) => {
+      params.set("filter", value);
+      return params;
+    });
+    filterProducts(searchParams.get("filter")!);
   };
 
   useEffect(() => {
@@ -101,22 +113,20 @@ export default function Products() {
         </div>
 
         {/*Product Filters*/}
-        <div className="bg-primary-color dark:bg-primary-dark-color sticky top-0 z-20 flex w-full gap-6 overflow-auto p-5">
+        <div className="bg-primary-color dark:bg-primary-dark-color sticky top-0 z-20 flex w-full gap-8 overflow-auto p-5">
           {productFilter.map((f, index) => (
-            <div
+            <button
               key={index}
-              className={`flex w-fit cursor-pointer items-center gap-2 rounded-lg p-2 transition-all ${activeFilter === f.value ? "border-b-accent-color dark:border-b-accent-dark-color border-b-4" : "hover:bg-gray-200 dark:hover:bg-gray-700"}`}
-              onClick={() => filterProducts(f.value)}
+              className={`flex w-fit cursor-pointer items-center gap-2 rounded-lg px-5 py-1 transition-all ${activeFilter === f.value ? "border-b-accent-color dark:border-b-accent-dark-color border-b-4" : "hover:bg-gray-200 dark:hover:bg-gray-700"}`}
+              onClick={() => handleFilter(f.value)}
             >
               <img
                 src={f.image}
                 alt={f.name}
                 className="h-8 w-8 dark:brightness-100 dark:invert-100"
               />
-              <h2 className="text-center text-lg font-medium overflow-ellipsis">
-                {f.name}
-              </h2>
-            </div>
+              <p className="text-md font-medium overflow-ellipsis">{f.name}</p>
+            </button>
           ))}
         </div>
 

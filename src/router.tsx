@@ -37,6 +37,14 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: "/products/:filter",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <Products />
+          </Suspense>
+        ),
+      },
+      {
         path: "/favorites",
         element: (
           <Suspense fallback={<Loading />}>
