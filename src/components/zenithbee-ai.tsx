@@ -2,7 +2,7 @@ import React from "react";
 import { useState, useEffect, useRef } from "react";
 import { Power, Send, X, Minimize } from "lucide-react";
 import { FaRobot } from "react-icons/fa";
-import { zenithAI } from "../actions/zenith-ai";
+import { useZenithAI } from "../hooks/mistral";
 import { Messages } from "../utils/types";
 import ReactMarkdown from "react-markdown";
 import ProductCardChat from "./product-card-chat";
@@ -32,46 +32,45 @@ export default function ZenithBeeChatBot() {
     }
   }, [messages]);
 
+  const { mutateAsync: sendToZenithAI } = useZenithAI();
+
   const handleSend = async () => {
     if (input.trim()) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "user",
-          content: input,
-        },
-      ]);
+      const userMessage: Messages = {
+        role: "user",
+        content: input,
+        product: null,
+        reserved: null,
+      };
 
+      setMessages((prev) => [...prev, userMessage]);
       setIsLoading(true);
       setInput("");
 
       try {
-        const response = await zenithAI({ input, userId });
-        console.log(response);
+        const response = await sendToZenithAI({ input, userId });
 
-        setTimeout(() => {
-          setMessages((prev) => [
-            ...prev,
-            {
-              role: "assistant",
-              content: response.message,
-              product: response.product,
-              reserved: response.reserved,
-            },
-          ]);
-          setIsLoading(false);
-        }, 500);
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: response?.message || "No message available",
+            product: response?.product || null,
+            reserved: response?.reserved || null,
+          },
+        ]);
       } catch (error) {
         console.error("Error getting response:", error);
-
         setMessages((prev) => [
           ...prev,
           {
             role: "assistant",
             content: "Sorry, I encountered an error. Please try again.",
             product: null,
+            reserved: null,
           },
         ]);
+      } finally {
         setIsLoading(false);
       }
     }

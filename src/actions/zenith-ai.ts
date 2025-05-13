@@ -12,6 +12,5 @@ const axiosClient = axios.create({
 });
 
 export const zenithAI = async (userInput: ZenithAPI) => {
-  const { data } = await axiosClient.post(`/mistral`, userInput);
-  return data;
+  return await axiosClient.post(`/mistral`, userInput);
 };
